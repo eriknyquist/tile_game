@@ -1,6 +1,6 @@
 #include "defs.h"
 
-SDL_Surface *screen;
+SDL_Window *window;
 
 void init (char *title)
 {
@@ -9,18 +9,15 @@ void init (char *title)
 		printf("Could not initialize SDL: %s\n", SDL_GetError());
 		exit(1);
 	}
-	
-	/* Open a 640 x 480 screen */
-	screen = SDL_SetVideoMode(SWIDTH, SHEIGHT, 0, SDL_HWPALETTE);
-	
-	if (screen == NULL) {
-		printf("Couldn't set screen mode to %dx%d: %s\n", SWIDTH, SHEIGHT,
-                SDL_GetError());
+
+    window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED, SWIDTH, SHEIGHT, 0);
+
+    if (window == NULL) {
+        printf("Couldn't create %dx%d window: %s\n", SWIDTH, SHEIGHT, 
+            SDL_GetError());
 		exit(1);
 	}
-	
-	/* Set the screen title */
-	SDL_WM_SetCaption(title, NULL);
 }
 
 void cleanup (void)

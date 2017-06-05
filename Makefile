@@ -1,5 +1,5 @@
-CFLAGS = -Wall -pedantic -Werror $(shell sdl-config --cflags)
-LDFLAGS = $(shell sdl-config --libs)
+CFLAGS = -Wall -pedantic -Werror $(shell sdl2-config --cflags)
+LDFLAGS = $(shell sdl2-config --libs)
 
 SRCS=$(wildcard src/*.c)
 OBJS=$(SRCS:.c=.o)
