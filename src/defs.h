@@ -6,6 +6,6 @@
 #include <stdlib.h>
 #include "SDL2/SDL.h"
 
-#define SHEIGHT 480
-#define SWIDTH  640
+#define SHEIGHT 1080
+#define SWIDTH  1920
 #endif

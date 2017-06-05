@@ -1,6 +1,17 @@
 #include "defs.h"
 
 SDL_Window *window;
+SDL_Renderer *renderer;
+
+/* Sky blue */
+const uint8_t bgcolor[3] = {102, 204, 255};
+
+void set_bg_color(SDL_Window *win, SDL_Renderer *render)
+{
+    SDL_SetRenderDrawColor(render, bgcolor[0], bgcolor[1], bgcolor[2], 255);
+    SDL_RenderClear(render);
+    SDL_RenderPresent(render);
+}
 
 void init (char *title)
 {
@@ -18,6 +29,9 @@ void init (char *title)
             SDL_GetError());
 		exit(1);
 	}
+
+    renderer = SDL_CreateRenderer(window, -1, 0);
+    set_bg_color(window, renderer);
 }
 
 void cleanup (void)
