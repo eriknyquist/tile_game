@@ -1,17 +1,7 @@
 #include "defs.h"
-#include "tile.h"
 #include "map.h"
 
 ctrl_t control;
-
-/* Sky blue */
-const uint8_t bgcolor[3] = {102, 204, 255};
-
-void set_bg_color(ctrl_t *ctrl)
-{
-    SDL_SetRenderDrawColor(ctrl->rend, bgcolor[0], bgcolor[1], bgcolor[2], 255);
-    SDL_RenderClear(ctrl->rend);
-}
 
 void init (char *title)
 {
@@ -21,8 +11,8 @@ void init (char *title)
 		exit(1);
 	}
 
-    if (map_from_file(&control.map, "mymap.dat") != 0) {
-        printf("Error reading mymap.dat\n");
+    if (map_from_file(&control.map, "map.dat") != 0) {
+        printf("Error reading map.dat\n");
         exit(1);
     }
 
@@ -35,9 +25,8 @@ void init (char *title)
 		exit(1);
 	}
 
+    control.pos = control.offset = 0;
     control.rend = SDL_CreateRenderer(control.win, -1, 0);
-    set_bg_color(&control);
-    draw_tile(&control, 30, 30);
 }
 
 void cleanup (void)

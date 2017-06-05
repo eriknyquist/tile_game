@@ -1,5 +1,11 @@
 #include "defs.h"
 #include "map.h"
+#include "tile.h"
+
+#define XTILES_WIDTH (SWIDTH / TILE_SIZE)
+
+/* Sky blue */
+const uint8_t bgcolor[3] = {102, 204, 255};
 
 void print_map(map_t *map)
 {
@@ -10,6 +16,50 @@ void print_map(map_t *map)
             printf("%s", map->data[y][x] ? "*" : " ");
         }
         printf("\n");
+    }
+}
+
+void set_bg_color(ctrl_t *ctrl)
+{
+    SDL_SetRenderDrawColor(ctrl->rend, bgcolor[0], bgcolor[1], bgcolor[2], 255);
+    SDL_RenderClear(ctrl->rend);
+}
+
+void do_map (ctrl_t *ctrl)
+{
+    int x, y, maxp;
+
+    maxp = ctrl->map.max_x - XTILES_WIDTH;
+
+    if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
+        if (((ctrl->offset + 1) % TILE_SIZE) == 0) {
+            ctrl->offset = 0;
+            if (ctrl->pos >= 1)
+                ctrl->pos -= 1;
+        } else {
+            ++ctrl->offset;
+        }
+    }
+
+    if (ctrl->input.right && ((ctrl->pos <  maxp) || (ctrl->offset > 0))) {
+        if (((ctrl->offset - 1) % TILE_SIZE) == 0) {
+            ctrl->offset = 0;
+            if (ctrl->pos <  (maxp - 1))
+                ctrl->pos += 1;
+        } else {
+            --ctrl->offset;
+        }
+    }
+
+    set_bg_color(ctrl);
+
+    for (y = 0; y < MAX_Y; ++y) {
+        for (x = (ctrl->pos) ? -1 : 0; x < XTILES_WIDTH + 2; ++x) {
+            if (ctrl->map.data[y][ctrl->pos + x] > 0) {
+                draw_tile(&control, (x * TILE_SIZE) + ctrl->offset,
+                    y * TILE_SIZE);
+            }
+        }
     }
 }
 

@@ -12,10 +12,15 @@
 
 /* Map array dimensions */
 #define MAX_X 512
-#define MAX_Y 24
+#define MAX_Y 16
 
 /* Tile size in pixels */
 #define TILE_SIZE (SHEIGHT / MAX_Y)
+
+typedef struct input {
+    uint8_t left;
+    uint8_t right;
+} input_t;
 
 typedef struct map {
     uint8_t data[MAX_Y][MAX_X];
@@ -24,8 +29,10 @@ typedef struct map {
 
 typedef struct control {
     map_t map;
+    input_t input;
     SDL_Window *win;
     SDL_Renderer *rend;
+    unsigned int pos;
     int offset;
 } ctrl_t;
 

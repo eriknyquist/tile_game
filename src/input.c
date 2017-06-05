@@ -1,14 +1,14 @@
 #include "defs.h"
 
-void get_input (void)
+void get_input (input_t *input)
 {
 	SDL_Event event;
-	
-	/* Loop through waiting messages and process them */	
+
+    /* Clear the input store from the last frame */
+    memset(input, 0, sizeof(input_t));
+
 	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
-
-			/* Closing the Window or pressing Escape will exit the program */
 			case SDL_QUIT:
 				exit(0);
 			break;
@@ -18,9 +18,12 @@ void get_input (void)
 					case SDLK_ESCAPE:
 						exit(0);
 					break;
-					
-					default:
-					break;
+			        case SDLK_LEFT:
+                        input->left = 1;
+                    break;
+			        case SDLK_RIGHT:
+                        input->right = 1;
+                    break;
 				}
 			break;
 		}

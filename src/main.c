@@ -1,6 +1,7 @@
 #include "defs.h"
 #include "init.h"
 #include "input.h"
+#include "map.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,7 +12,9 @@ int main(int argc, char *argv[])
 	atexit(cleanup);
 	
 	while (1) {
-		get_input();
+		get_input(&control.input);
+        do_map(&control);
+
         SDL_RenderPresent(control.rend);
 		SDL_Delay(16);
 	}
