@@ -12,7 +12,7 @@
 
 /* Map array dimensions */
 #define MAX_X 512
-#define MAX_Y 32
+#define MAX_Y 24
 
 /* Tile size in pixels */
 #define TILE_SIZE (SHEIGHT / MAX_Y)
