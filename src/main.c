@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
 	
 	while (1) {
 		get_input();
+        SDL_RenderPresent(control.rend);
 		SDL_Delay(16);
 	}
 	

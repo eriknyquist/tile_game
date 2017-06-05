@@ -17,12 +17,18 @@
 /* Tile size in pixels */
 #define TILE_SIZE (SHEIGHT / MAX_Y)
 
+typedef struct map {
+    uint8_t data[MAX_Y][MAX_X];
+    int max_x;
+} map_t;
+
 typedef struct control {
-    uint8_t map[MAX_Y][MAX_X];
+    map_t map;
     SDL_Window *win;
     SDL_Renderer *rend;
+    int offset;
 } ctrl_t;
 
-extern ctrl_t ctrl;
+extern ctrl_t control;
 
 #endif

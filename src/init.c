@@ -1,5 +1,6 @@
 #include "defs.h"
 #include "tile.h"
+#include "map.h"
 
 ctrl_t control;
 
@@ -20,6 +21,11 @@ void init (char *title)
 		exit(1);
 	}
 
+    if (map_from_file(&control.map, "mymap.dat") != 0) {
+        printf("Error reading mymap.dat\n");
+        exit(1);
+    }
+
     control.win = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, SWIDTH, SHEIGHT, 0);
 
@@ -32,7 +38,6 @@ void init (char *title)
     control.rend = SDL_CreateRenderer(control.win, -1, 0);
     set_bg_color(&control);
     draw_tile(&control, 30, 30);
-    SDL_RenderPresent(control.rend);
 }
 
 void cleanup (void)
