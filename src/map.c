@@ -4,6 +4,8 @@
 
 #define XTILES_WIDTH (SWIDTH / TILE_SIZE)
 
+const int speed = 10;
+
 /* Sky blue */
 const uint8_t bgcolor[3] = {102, 204, 255};
 
@@ -32,22 +34,23 @@ void do_map (ctrl_t *ctrl)
     maxp = ctrl->map.max_x - XTILES_WIDTH;
 
     if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
-        if (((ctrl->offset + 1) % TILE_SIZE) == 0) {
-            ctrl->offset = 0;
+        if (((ctrl->offset + speed) > TILE_SIZE)) {
+            ctrl->offset = (ctrl->offset + speed) % TILE_SIZE;
+
             if (ctrl->pos >= 1)
                 ctrl->pos -= 1;
         } else {
-            ++ctrl->offset;
+            ctrl->offset += speed;
         }
     }
 
     if (ctrl->input.right && ((ctrl->pos <  maxp) || (ctrl->offset > 0))) {
-        if (((ctrl->offset - 1) % TILE_SIZE) == 0) {
-            ctrl->offset = 0;
+        if ((ctrl->offset - speed) < 0) {
+            ctrl->offset = TILE_SIZE - 1;
             if (ctrl->pos <  (maxp - 1))
                 ctrl->pos += 1;
         } else {
-            --ctrl->offset;
+            ctrl->offset -= speed;
         }
     }
 
