@@ -3,6 +3,9 @@
 #include "input.h"
 #include "map.h"
 
+#define FPS 60
+#define TICKS_PER_FRAME (1000 / FPS)
+
 int main(int argc, char *argv[])
 {
     /* Start up SDL */
@@ -12,11 +15,13 @@ int main(int argc, char *argv[])
     atexit(cleanup);
     
     while (1) {
-        get_input(&control.input);
-        do_map(&control);
+        if ((SDL_GetTicks() - control.lastframe) >= TICKS_PER_FRAME) {
+            get_input(&control.input);
+            do_map(&control);
 
-        SDL_RenderPresent(control.rend);
-        SDL_Delay(16);
+            SDL_RenderPresent(control.rend);
+            control.lastframe = SDL_GetTicks();
+        }
     }
     
     exit(0);

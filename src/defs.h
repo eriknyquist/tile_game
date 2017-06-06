@@ -32,6 +32,7 @@ typedef struct control {
     input_t input;
     SDL_Window *win;
     SDL_Renderer *rend;
+    unsigned int lastframe;
     unsigned int pos;
     int offset;
 } ctrl_t;

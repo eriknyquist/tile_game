@@ -4,7 +4,8 @@
 
 #define XTILES_WIDTH (SWIDTH / TILE_SIZE)
 
-const int speed = 10;
+/* Movement- pixels per sec. */
+#define PPS 400
 
 /* Sky blue */
 const uint8_t bgcolor[3] = {102, 204, 255};
@@ -29,27 +30,29 @@ void set_bg_color(ctrl_t *ctrl)
 
 void do_map (ctrl_t *ctrl)
 {
+    int pixels;
     int x, y, maxp;
 
+    pixels = ((SDL_GetTicks() - control.lastframe) / 1000.0) * PPS;
     maxp = ctrl->map.max_x - XTILES_WIDTH - 1;
 
     if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
-        if (((ctrl->offset + speed) > TILE_SIZE)) {
-            ctrl->offset = (ctrl->offset + speed) % TILE_SIZE;
+        if (((ctrl->offset + pixels) > TILE_SIZE)) {
+            ctrl->offset = (ctrl->offset + pixels) % TILE_SIZE;
 
             if (ctrl->pos >= 1)
                 ctrl->pos -= 1;
         } else {
-            ctrl->offset += speed;
+            ctrl->offset += pixels;
         }
     }
 
     if (ctrl->input.right && ctrl->pos < maxp) {
-        if ((ctrl->offset - speed) < 0) {
-            ctrl->offset = TILE_SIZE + (ctrl->offset - speed);
+        if ((ctrl->offset - pixels) < 0) {
+            ctrl->offset = TILE_SIZE + (ctrl->offset - pixels);
             ctrl->pos += 1;
         } else {
-            ctrl->offset -= speed;
+            ctrl->offset -= pixels;
         }
     }
 

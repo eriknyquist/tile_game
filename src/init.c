@@ -26,6 +26,7 @@ void init (char *title)
     }
 
     memset(&control.input, 0, sizeof(input_t));
+    control.lastframe = SDL_GetTicks();
     control.pos = control.offset = 0;
     control.rend = SDL_CreateRenderer(control.win, -1, 0);
 }
