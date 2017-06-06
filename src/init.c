@@ -5,11 +5,11 @@ ctrl_t control;
 
 void init (char *title)
 {
-	/* Initialise SDL Video */
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		printf("Could not initialize SDL: %s\n", SDL_GetError());
-		exit(1);
-	}
+    /* Initialise SDL Video */
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        printf("Could not initialize SDL: %s\n", SDL_GetError());
+        exit(1);
+    }
 
     if (map_from_file(&control.map, "map.dat") != 0) {
         printf("Error reading map.dat\n");
@@ -22,15 +22,16 @@ void init (char *title)
     if (control.win == NULL) {
         printf("Couldn't create %dx%d window: %s\n", SWIDTH, SHEIGHT, 
             SDL_GetError());
-		exit(1);
-	}
+        exit(1);
+    }
 
+    memset(&control.input, 0, sizeof(input_t));
     control.pos = control.offset = 0;
     control.rend = SDL_CreateRenderer(control.win, -1, 0);
 }
 
 void cleanup (void)
 {
-	/* Shut down SDL */
-	SDL_Quit();
+    /* Shut down SDL */
+    SDL_Quit();
 }
