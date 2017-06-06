@@ -31,7 +31,7 @@ void do_map (ctrl_t *ctrl)
 {
     int x, y, maxp;
 
-    maxp = ctrl->map.max_x - XTILES_WIDTH;
+    maxp = ctrl->map.max_x - XTILES_WIDTH - 1;
 
     if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
         if (((ctrl->offset + speed) > TILE_SIZE)) {
@@ -44,11 +44,10 @@ void do_map (ctrl_t *ctrl)
         }
     }
 
-    if (ctrl->input.right && ((ctrl->pos <  maxp) || (ctrl->offset > 0))) {
+    if (ctrl->input.right && ctrl->pos < maxp) {
         if ((ctrl->offset - speed) < 0) {
-            ctrl->offset = TILE_SIZE - 1;
-            if (ctrl->pos <  (maxp - 1))
-                ctrl->pos += 1;
+            ctrl->offset = TILE_SIZE + (ctrl->offset - speed);
+            ctrl->pos += 1;
         } else {
             ctrl->offset -= speed;
         }
