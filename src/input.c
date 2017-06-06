@@ -6,6 +6,7 @@ void get_input (input_t *input)
     unsigned int val;
 
 
+    /* Get input type */
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
             case SDL_QUIT:
@@ -21,6 +22,7 @@ void get_input (input_t *input)
                 continue;
         }
 
+        /* Get key */
         switch (event.key.keysym.sym) {
             case SDLK_ESCAPE:
                 exit(0);

@@ -5,7 +5,7 @@
 const uint8_t tfill[3] = {204, 102, 0};
 const uint8_t tline[3] = {0, 0, 0};
 
-void draw_tile (ctrl_t *ctrl, int pos_x, int pos_y)
+SDL_Rect draw_tile (ctrl_t *ctrl, int pos_x, int pos_y)
 {
     SDL_Rect r;
 
@@ -24,4 +24,5 @@ void draw_tile (ctrl_t *ctrl, int pos_x, int pos_y)
     /* Draw smaller, light coloured square inside */
     SDL_SetRenderDrawColor(ctrl->rend, tfill[0], tfill[1], tfill[2], 255);
     SDL_RenderFillRect(ctrl->rend, &r);
+    return r;
 }

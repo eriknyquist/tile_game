@@ -14,4 +14,4 @@ $(PROG): $(OBJS)
 	$(CC) $(OBJS) -o $(PROG) $(LDFLAGS)
 
 clean:
-	rm $(PROG) src/*.o
+	rm -f $(PROG) src/*.o

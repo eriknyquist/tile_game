@@ -2,41 +2,37 @@
 #include "map.h"
 #include "tile.h"
 
-#define XTILES_WIDTH (SWIDTH / TILE_SIZE)
-
 /* Movement- pixels per sec. */
 #define PPS 400
 
 /* Sky blue */
 const uint8_t bgcolor[3] = {102, 204, 255};
 
-void print_map(map_t *map)
-{
-    unsigned int x, y;
-
-    for (y = 0; y < MAX_Y; ++y) {
-        for (x = 0; x < map->max_x; ++x) {
-            printf("%s", map->data[y][x] ? "*" : " ");
-        }
-        printf("\n");
-    }
-}
-
+/* set_bg_color: draws the background colour on the entire window */
 void set_bg_color(ctrl_t *ctrl)
 {
     SDL_SetRenderDrawColor(ctrl->rend, bgcolor[0], bgcolor[1], bgcolor[2], 255);
     SDL_RenderClear(ctrl->rend);
 }
 
+/* do_map: draws the on-screen tiles from the currently loaded map, based on the
+ * the current keyboard inputs */
 void do_map (ctrl_t *ctrl)
 {
     int pixels;
     int x, y, maxp;
 
+    /* No. of pixels for map movement for this frame, based on
+     * the time elapsed since the previous frame */
     pixels = ((SDL_GetTicks() - control.lastframe) / 1000.0) * PPS;
+
+    /* Maximum starting position in the map array, taking
+     * screen width into account */
     maxp = ctrl->map.max_x - XTILES_WIDTH - 1;
 
+    /* Left keypress: scroll map to the right */
     if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
+        /* Handle positioning of map between tile boundaries */
         if (((ctrl->offset + pixels) > TILE_SIZE)) {
             ctrl->offset = (ctrl->offset + pixels) % TILE_SIZE;
 
@@ -47,7 +43,9 @@ void do_map (ctrl_t *ctrl)
         }
     }
 
+    /* Right keypress: scroll map to the left */
     if (ctrl->input.right && ctrl->pos < maxp) {
+        /* Handle positioning of map between tile boundaries */
         if ((ctrl->offset - pixels) < 0) {
             ctrl->offset = TILE_SIZE + (ctrl->offset - pixels);
             ctrl->pos += 1;
@@ -56,18 +54,29 @@ void do_map (ctrl_t *ctrl)
         }
     }
 
+    /* Reset on-screen collider array */
+    ctrl->cpos = 0;
+
+    /* Draw background colour */
     set_bg_color(ctrl);
 
-    for (y = 0; y < MAX_Y; ++y) {
+    /* Draw visible tiles from the map on the screen */
+    for (y = 0; y < YTILES_HEIGHT; ++y) {
         for (x = (ctrl->pos) ? -1 : 0; x < XTILES_WIDTH + 2; ++x) {
             if (ctrl->map.data[y][ctrl->pos + x] > 0) {
-                draw_tile(&control, (x * TILE_SIZE) + ctrl->offset,
-                    y * TILE_SIZE);
+                /* Draw a new tile here at (x,y), and add it to the
+                 * on-screen collider array */
+                ctrl->colliders[ctrl->cpos++] =
+                    draw_tile(&control,
+                              (x * TILE_SIZE) + ctrl->offset,
+                               y * TILE_SIZE);
             }
         }
     }
 }
 
+/* map_from_file: opens file 'filename', and reads map data
+ * into 'map' structure. Returns 0 if successful, otherwise -1 */
 int map_from_file (map_t *map, char *filename)
 {
     FILE *fp;

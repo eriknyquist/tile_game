@@ -17,6 +17,12 @@
 /* Tile size in pixels */
 #define TILE_SIZE (SHEIGHT / MAX_Y)
 
+/* Height of the screen in tiles */
+#define YTILES_HEIGHT MAX_Y
+
+/* Width of the screen in tiles*/
+#define XTILES_WIDTH (SWIDTH / TILE_SIZE)
+
 typedef struct input {
     uint8_t left;
     uint8_t right;
@@ -30,8 +36,10 @@ typedef struct map {
 typedef struct control {
     map_t map;
     input_t input;
+    SDL_Rect colliders[YTILES_HEIGHT * XTILES_WIDTH];
     SDL_Window *win;
     SDL_Renderer *rend;
+    unsigned int cpos;
     unsigned int lastframe;
     unsigned int pos;
     int offset;

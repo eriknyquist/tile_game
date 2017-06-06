@@ -1,6 +1,7 @@
 #include "defs.h"
 #include "map.h"
 
+#define DEFAULT_MAP "maps/2.dat"
 
 /* #define RENDER_FLAGS SDL_RENDERER_PRESENTVSYNC */
 #define RENDER_FLAGS 0
@@ -9,14 +10,16 @@ ctrl_t control;
 
 void init (char *title)
 {
+    memset(&control, 0, sizeof(ctrl_t));
+
     /* Initialise SDL Video */
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("Could not initialize SDL: %s\n", SDL_GetError());
         exit(1);
     }
 
-    if (map_from_file(&control.map, "map.dat") != 0) {
-        printf("Error reading map.dat\n");
+    if (map_from_file(&control.map, DEFAULT_MAP) != 0) {
+        printf("Error reading "DEFAULT_MAP"\n");
         exit(1);
     }
 
@@ -29,7 +32,6 @@ void init (char *title)
         exit(1);
     }
 
-    memset(&control.input, 0, sizeof(input_t));
     control.lastframe = SDL_GetTicks();
     control.pos = control.offset = 0;
     control.rend = SDL_CreateRenderer(control.win, -1, RENDER_FLAGS);
