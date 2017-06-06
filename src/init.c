@@ -1,6 +1,10 @@
 #include "defs.h"
 #include "map.h"
 
+
+/* #define RENDER_FLAGS SDL_RENDERER_PRESENTVSYNC */
+#define RENDER_FLAGS 0
+
 ctrl_t control;
 
 void init (char *title)
@@ -28,7 +32,7 @@ void init (char *title)
     memset(&control.input, 0, sizeof(input_t));
     control.lastframe = SDL_GetTicks();
     control.pos = control.offset = 0;
-    control.rend = SDL_CreateRenderer(control.win, -1, 0);
+    control.rend = SDL_CreateRenderer(control.win, -1, RENDER_FLAGS);
 }
 
 void cleanup (void)

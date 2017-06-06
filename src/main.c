@@ -18,9 +18,8 @@ int main(int argc, char *argv[])
         if ((SDL_GetTicks() - control.lastframe) >= TICKS_PER_FRAME) {
             get_input(&control.input);
             do_map(&control);
-
-            SDL_RenderPresent(control.rend);
             control.lastframe = SDL_GetTicks();
+            SDL_RenderPresent(control.rend);
         }
     }
     
