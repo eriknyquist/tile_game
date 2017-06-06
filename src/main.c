@@ -20,6 +20,8 @@ int main(int argc, char *argv[])
             do_map(&control);
             control.lastframe = SDL_GetTicks();
             SDL_RenderPresent(control.rend);
+        } else {
+            SDL_Delay(2);
         }
     }
     
