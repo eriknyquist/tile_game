@@ -1,7 +1,7 @@
 #include "defs.h"
 #include "map.h"
 
-#define DEFAULT_MAP "maps/2.dat"
+#define DEFAULT_MAP "maps/1.dat"
 
 /* #define RENDER_FLAGS SDL_RENDERER_PRESENTVSYNC */
 #define RENDER_FLAGS 0
@@ -13,7 +13,7 @@ void init (char *title)
     memset(&control, 0, sizeof(ctrl_t));
 
     /* Initialise SDL Video */
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
         printf("Could not initialize SDL: %s\n", SDL_GetError());
         exit(1);
     }

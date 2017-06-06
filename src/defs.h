@@ -35,8 +35,8 @@ typedef struct map {
 
 typedef struct control {
     map_t map;
-    input_t input;
     SDL_Rect colliders[YTILES_HEIGHT * XTILES_WIDTH];
+    input_t input;
     SDL_Window *win;
     SDL_Renderer *rend;
     unsigned int cpos;
