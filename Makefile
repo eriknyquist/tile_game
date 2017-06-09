@@ -1,4 +1,4 @@
-CFLAGS = -Wall -pedantic -Werror $(shell sdl2-config --cflags)
+CFLAGS = -Wall -pedantic $(shell sdl2-config --cflags)
 LDFLAGS = $(shell sdl2-config --libs)
 
 SRCS=$(wildcard src/*.c)

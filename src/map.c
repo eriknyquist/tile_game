@@ -24,7 +24,7 @@ void do_map (ctrl_t *ctrl)
 
     /* No. of pixels for map movement for this frame, based on
      * the time elapsed since the previous frame */
-    pixels = ((SDL_GetTicks() - control.lastframe) / 1000.0) * PPS;
+    pixels = ((SDL_GetTicks() - ctrl->lastframe) / 1000.0) * PPS;
 
     /* Maximum starting position in the map array, taking
      * screen width into account */
@@ -55,20 +55,20 @@ void do_map (ctrl_t *ctrl)
     }
 
     /* Reset on-screen collider array */
-    ctrl->cpos = 0;
+    memset(ctrl->colliders, 0,
+        sizeof(ctrl->colliders[0][0]) * YTILES_HEIGHT * (XTILES_WIDTH + 1));
 
     /* Draw background colour */
     set_bg_color(ctrl);
 
     /* Draw visible tiles from the map on the screen */
     for (y = 0; y < YTILES_HEIGHT; ++y) {
-        for (x = (ctrl->pos) ? -1 : 0; x < XTILES_WIDTH + 2; ++x) {
+        for (x = (ctrl->pos) ? -1 : 0; x < XTILES_WIDTH + 1; ++x) {
             if (ctrl->map.data[y][ctrl->pos + x] > 0) {
-                /* Draw a new tile here at (x,y), and add it to the
-                 * on-screen collider array */
-                ctrl->colliders[ctrl->cpos++] =
-                    draw_tile(&control,
-                              (x * TILE_SIZE) + ctrl->offset,
+                /* Draw a new tile here at (x,y) */
+                 ctrl->colliders[y][x] =
+                     draw_tile(ctrl,
+                               (x * TILE_SIZE) + ctrl->offset,
                                y * TILE_SIZE);
             }
         }

@@ -5,6 +5,8 @@
 #define FPS 60
 #define MS_PER_FRAME (1000 / FPS)
 
+ctrl_t control;
+
 uint32_t frame_timer(uint32_t interval, void *param)
 {
     SDL_Event event;
@@ -32,7 +34,7 @@ int main(int argc, char *argv[])
     SDL_Event event;
 
     /* Start up SDL */
-    init("Tile map engine");
+    init(&control, "Tile map engine");
 
     /* Call the cleanup function when the program exits */
     atexit(cleanup);
@@ -41,7 +43,7 @@ int main(int argc, char *argv[])
     timer = SDL_AddTimer(MS_PER_FRAME, frame_timer, NULL);
 
     while (SDL_WaitEvent(&event))
-        process_event(&event);
+        process_event(&event, &control);
 
     SDL_RemoveTimer(timer);
     exit(0);

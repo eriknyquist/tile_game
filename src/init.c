@@ -6,11 +6,9 @@
 /* #define RENDER_FLAGS SDL_RENDERER_PRESENTVSYNC */
 #define RENDER_FLAGS 0
 
-ctrl_t control;
-
-void init (char *title)
+void init (ctrl_t *ctrl, char *title)
 {
-    memset(&control, 0, sizeof(ctrl_t));
+    memset(ctrl, 0, sizeof(ctrl_t));
 
     /* Initialise SDL Video */
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
@@ -18,23 +16,29 @@ void init (char *title)
         exit(1);
     }
 
-    if (map_from_file(&control.map, DEFAULT_MAP) != 0) {
+    if (map_from_file(&ctrl->map, DEFAULT_MAP) != 0) {
         printf("Error reading "DEFAULT_MAP"\n");
         exit(1);
     }
 
-    control.win = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED,
+    ctrl->win = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, SWIDTH, SHEIGHT, 0);
 
-    if (control.win == NULL) {
+    if (ctrl->win == NULL) {
         printf("Couldn't create %dx%d window: %s\n", SWIDTH, SHEIGHT, 
             SDL_GetError());
         exit(1);
     }
 
-    control.lastframe = SDL_GetTicks();
-    control.pos = control.offset = 0;
-    control.rend = SDL_CreateRenderer(control.win, -1, RENDER_FLAGS);
+    ctrl->player.rect.x = SWIDTH / 2;
+    ctrl->player.rect.y = 50;
+    ctrl->player.rect.w = PLAYER_SIZE;
+    ctrl->player.rect.h = PLAYER_SIZE;
+    ctrl->player.yvelocity = 0;
+
+    ctrl->lastframe = SDL_GetTicks();
+    ctrl->pos = ctrl->offset = 0;
+    ctrl->rend = SDL_CreateRenderer(ctrl->win, -1, RENDER_FLAGS);
 }
 
 void cleanup (void)
