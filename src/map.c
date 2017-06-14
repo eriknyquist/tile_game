@@ -24,7 +24,7 @@ void do_map (ctrl_t *ctrl)
 
     /* No. of pixels for map movement for this frame, based on
      * the time elapsed since the previous frame */
-    pixels = ((SDL_GetTicks() - ctrl->lastframe) / 1000.0) * PPS;
+    pixels = (PHYSICS_DT / 1000.0) * PPS;
 
     /* Maximum starting position in the map array, taking
      * screen width into account */
@@ -75,6 +75,16 @@ void do_map (ctrl_t *ctrl)
     }
 }
 
+/* map_reset: resets the player and map to starting positions */
+void reset_map (ctrl_t *ctrl)
+{
+    ctrl->player.rect.x = ctrl->map.start_x + 1;
+    ctrl->player.rect.y = ctrl->map.start_y + 1;
+    ctrl->player.yvelocity = 0;
+    ctrl->offset = 0;
+    ctrl->pos = 0;
+}
+
 /* map_from_file: opens file 'filename', and reads map data
  * into 'map' structure. Returns 0 if successful, otherwise -1 */
 int map_from_file (map_t *map, char *filename)
@@ -104,8 +114,14 @@ int map_from_file (map_t *map, char *filename)
                 return 0;
 
         } else {
-            if (c != ' ') {
-                map->data[y][x] = 1;
+            switch (c) {
+                case '*':
+                    map->data[y][x] = 1;
+                break;
+                case '@':
+                    map->start_x = x * TILE_SIZE;
+                    map->start_y = y * TILE_SIZE;
+                break;
             }
 
             ++x;

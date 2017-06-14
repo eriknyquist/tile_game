@@ -5,6 +5,7 @@
     memset(map->data, 0, sizeof(map->data[0][0]) * MAX_X * MAX_Y)
 
 void do_map (ctrl_t *ctrl);
+void reset_map (ctrl_t *ctrl);
 int map_from_file (map_t *map, char *filename);
 
 #endif

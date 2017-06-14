@@ -3,8 +3,11 @@
 
 #define DEFAULT_MAP "maps/1.dat"
 
-/* #define RENDER_FLAGS SDL_RENDERER_PRESENTVSYNC */
+#if VSYNC
+#define RENDER_FLAGS (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
+#else
 #define RENDER_FLAGS 0
+#endif /* VSYNC */
 
 void init (ctrl_t *ctrl, char *title)
 {
@@ -30,13 +33,14 @@ void init (ctrl_t *ctrl, char *title)
         exit(1);
     }
 
-    ctrl->player.rect.x = SWIDTH / 2;
-    ctrl->player.rect.y = 50;
+    ctrl->lastframe = SDL_GetTicks();
+    ctrl->player.rect.x = ctrl->map.start_x;
+    ctrl->player.rect.y = ctrl->map.start_y;
     ctrl->player.rect.w = PLAYER_SIZE;
     ctrl->player.rect.h = PLAYER_SIZE;
     ctrl->player.yvelocity = 0;
+    ctrl->dt = 0;
 
-    ctrl->lastframe = SDL_GetTicks();
     ctrl->pos = ctrl->offset = 0;
     ctrl->rend = SDL_CreateRenderer(ctrl->win, -1, RENDER_FLAGS);
 }
