@@ -1,20 +1,21 @@
 #include "defs.h"
 #include "map.h"
+#include "tile_collisions.h"
 
 /* Gravity acceleration, pixels-per-second */
-#define GRAVITY_PPS 100
+#define GRAVITY_PPS 75
+
+/* Maximum gravity velocity, pixels-per-second */
+#define MAX_GRAVITY_PPS 1500
 
 /* Gravity increase, in pixels, for a single physics step */
 #define GRAVITY_PIXELS ((PHYSICS_DT / 1000.0) * GRAVITY_PPS)
 
+/* Maximum gravity velocity, in pixels, for a single physics step */
+#define MAX_GRAVITY_PIXELS ((PHYSICS_DT / 1000.0) * MAX_GRAVITY_PPS)
+
 /* Jump velocity boost, pixels */
 #define JUMP_ACCEL 30
-
-/* Maximum gravity velocity, pixels-per-second */
-#define MAX_YVELOCITY ((PHYSICS_DT / 1000.0) * 1000)
-
-#define BELOW_MAP -1
-#define NO_TILES  -2
 
 const uint8_t fill[3] = {0, 0, 0};
 
@@ -24,94 +25,6 @@ static void draw_player (ctrl_t *ctrl)
     SDL_RenderFillRect(ctrl->rend, &ctrl->player.rect);
 }
 
-/* Returns the distance (in pixels) to the nearest map tile to the
- * right of the player's x position on the screen */
-static int obstacle_right (ctrl_t *ctrl)
-{
-    int i;
-    unsigned int x, y, right;
-
-    /* x/y of tile containing the player's right edge */
-    right = ctrl->player.rect.x + PLAYER_SIZE;
-    x = right / TILE_SIZE;
-    y = ctrl->player.rect.y / TILE_SIZE;
-
-    /* Loop through tiles to the right of player, find the first obstacle */
-    for (i = x + 1; i < XTILES_WIDTH; ++i) {
-        if (ctrl->map.data[y][ctrl->pos + i]) {
-            break;
-        }
-    }
-
-    /* No tiles to the right of player */
-    if (i == XTILES_WIDTH) {
-        return NO_TILES;
-    }
-
-    /* Return distance between player and tile */
-    return ctrl->colliders[y][i].x - right;
-}
-
-/* Returns the distance (in pixels) to the nearest map tile above
- * the player's x position on the screen */
-static int obstacle_up (ctrl_t *ctrl)
-{
-    int i;
-    unsigned int x, y;
-
-    /* x/y of tile containing the player's top edge */
-    x = (ctrl->player.rect.x / TILE_SIZE) - 1;
-    y = ctrl->player.rect.y / TILE_SIZE;
-
-    /* Loop through tiles above player, find the first obstacle */
-    for (i = y - 1; i >= 0; --i) {
-        if (ctrl->map.data[i][x + ctrl->pos]) {
-            break;
-        }
-    }
-
-    /* No tiles above player */
-    if (i < 0) {
-        return NO_TILES;
-    }
-
-    /* Return distance between player and tile */
-    return ctrl->player.rect.y - (ctrl->colliders[i][x].y + TILE_SIZE);
-}
-
-/* Returns the distance (in pixels) of the nearest map tile below
- * the player's x position on the screen */
-static int obstacle_down (ctrl_t *ctrl)
-{
-    int i;
-    unsigned int x, y, bottom;
-
-    /* x/y of tile containing the player's bottom edge */
-    bottom = ctrl->player.rect.y + PLAYER_SIZE;
-    x = (ctrl->player.rect.x / TILE_SIZE) - 1;
-    y = bottom / TILE_SIZE;
-
-    /* No hope; player has fallen below the map */
-    if (y >= YTILES_HEIGHT) {
-        return BELOW_MAP;
-    }
-
-    /* Loop through tiles below player, find the first obstacle */
-    for (i = y + 1; i < YTILES_HEIGHT; ++i) {
-        if (ctrl->map.data[i][x + ctrl->pos]) {
-            break;
-        }
-    }
-
-    /* No tiles below player */
-    if (i == YTILES_HEIGHT) {
-        return NO_TILES;
-    }
-
-    /* Return distance between player and tile */
-    return ctrl->colliders[i][x].y - bottom;
-}
-
 void init_player (ctrl_t *ctrl)
 {
     draw_player(ctrl);
@@ -119,7 +32,7 @@ void init_player (ctrl_t *ctrl)
 
 static void add_gravity(ctrl_t *ctrl)
 {
-    if (ctrl->player.yvelocity < MAX_YVELOCITY) {
+    if (ctrl->player.yvelocity < MAX_GRAVITY_PIXELS) {
         ctrl->player.yvelocity += GRAVITY_PIXELS;
     }
 }
@@ -128,7 +41,7 @@ static void collisions_top (ctrl_t *ctrl)
 {
     int udist;
 
-    udist = obstacle_up(ctrl);
+    udist = tile_obstacle_up(ctrl, &ctrl->player.rect);
 
     if (udist >= 1) {
         if (-(ctrl->player.yvelocity) > udist) {
@@ -144,7 +57,7 @@ static void collisions_bottom (ctrl_t *ctrl)
     int ddist;
 
     /* Get distance to nearest tile below player */
-    ddist = obstacle_down(ctrl);
+    ddist = tile_obstacle_down(ctrl, &ctrl->player.rect);
 
     if (ddist > 1) {
         add_gravity(ctrl);

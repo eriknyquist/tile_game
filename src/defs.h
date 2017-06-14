@@ -8,7 +8,7 @@
 
 /* If enabled, the framerate will by determined by the refresh rate
  * If disabled, the framerare specified by FPS will be enforced */
-#define VSYNC 0
+#define VSYNC 1
 
 /* FPS, if fixed */
 #define FPS 60
