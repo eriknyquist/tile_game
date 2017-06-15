@@ -13,6 +13,9 @@ void init (ctrl_t *ctrl, char *title)
 {
     memset(ctrl, 0, sizeof(ctrl_t));
 
+    ctrl->map.start_x = XTILES_WIDTH / 2;
+    ctrl->map.start_y = 1;
+
     /* Initialise SDL Video */
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
         printf("Could not initialize SDL: %s\n", SDL_GetError());
