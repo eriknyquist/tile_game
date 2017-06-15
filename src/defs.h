@@ -52,7 +52,7 @@ typedef struct input {
 } input_t;
 
 typedef struct map {
-    uint8_t data[MAX_Y][MAX_X];
+    uint8_t data[MAX_Y][MAX_X + XTILES_WIDTH + 1];
     int max_x;
     int start_x;
     int start_y;

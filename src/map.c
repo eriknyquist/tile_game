@@ -28,7 +28,7 @@ void do_map (ctrl_t *ctrl)
 
     /* Maximum starting position in the map array, taking
      * screen width into account */
-    maxp = ctrl->map.max_x - XTILES_WIDTH - 1;
+    maxp = ctrl->map.max_x - (XTILES_WIDTH / 2) - 1;
 
     /* Left keypress: scroll map to the right */
     if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
@@ -88,11 +88,11 @@ void do_map (ctrl_t *ctrl)
 /* map_reset: resets the player and map to starting positions */
 void reset_map (ctrl_t *ctrl)
 {
-    ctrl->player.rect.x = ctrl->map.start_x + 1;
-    ctrl->player.rect.y = ctrl->map.start_y + 1;
+    ctrl->player.rect.x = (XTILES_WIDTH * TILE_SIZE)/ 2;
+    ctrl->player.rect.y = TILE_SIZE * ctrl->map.start_y + 1;
+    ctrl->pos = ctrl->map.start_x - (XTILES_WIDTH / 2);
     ctrl->player.yvelocity = 0;
     ctrl->offset = 0;
-    ctrl->pos = 0;
 }
 
 /* map_from_file: opens file 'filename', and reads map data
@@ -104,7 +104,8 @@ int map_from_file (map_t *map, char *filename)
     unsigned int y;
     char c;
 
-    x = y = map->max_x = 0;
+    x = XTILES_WIDTH / 2;
+    y = map->max_x = 0;
 
     if ((fp = fopen(filename, "rb")) == NULL) {
         return -1;
@@ -113,11 +114,11 @@ int map_from_file (map_t *map, char *filename)
     map_zero(map);
 
     while ((c = fgetc(fp)) != EOF) {
-        if (c == '\n' || x >= MAX_X) {
+        if (c == '\n' || x >= (MAX_X + (XTILES_WIDTH / 2))) {
             if ((x + 1) > map->max_x)
                 map->max_x = x + 1;
 
-            x = 0;
+            x = XTILES_WIDTH / 2;
             ++y;
 
             if (y >= MAX_Y)
@@ -129,8 +130,8 @@ int map_from_file (map_t *map, char *filename)
                     map->data[y][x] = 1;
                 break;
                 case '@':
-                    map->start_x = x * TILE_SIZE;
-                    map->start_y = y * TILE_SIZE;
+                    map->start_x = x;
+                    map->start_y = y;
                 break;
             }
 

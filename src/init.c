@@ -34,14 +34,10 @@ void init (ctrl_t *ctrl, char *title)
     }
 
     ctrl->lastframe = SDL_GetTicks();
-    ctrl->player.rect.x = ctrl->map.start_x;
-    ctrl->player.rect.y = ctrl->map.start_y;
     ctrl->player.rect.w = PLAYER_SIZE;
     ctrl->player.rect.h = PLAYER_SIZE;
-    ctrl->player.yvelocity = 0;
-    ctrl->dt = 0;
+    reset_map(ctrl);
 
-    ctrl->pos = ctrl->offset = 0;
     ctrl->rend = SDL_CreateRenderer(ctrl->win, -1, RENDER_FLAGS);
 }
 
