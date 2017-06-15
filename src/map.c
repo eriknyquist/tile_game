@@ -1,9 +1,8 @@
 #include "defs.h"
 #include "map.h"
 #include "tile.h"
-
-/* Movement- pixels per sec. */
-#define PPS 400
+#include "tile_collisions.h"
+#include "player.h"
 
 /* Sky blue */
 const uint8_t bgcolor[3] = {102, 204, 255};
@@ -20,11 +19,12 @@ void set_bg_color(ctrl_t *ctrl)
 void do_map (ctrl_t *ctrl)
 {
     int pixels;
+    int dist;
     int x, y, maxp;
 
     /* No. of pixels for map movement for this frame, based on
      * the time elapsed since the previous frame */
-    pixels = (PHYSICS_DT / 1000.0) * PPS;
+    pixels = (PHYSICS_DT / 1000.0) * X_PPS;
 
     /* Maximum starting position in the map array, taking
      * screen width into account */
@@ -32,6 +32,11 @@ void do_map (ctrl_t *ctrl)
 
     /* Left keypress: scroll map to the right */
     if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
+        dist = player_distance_left(ctrl);
+        if (dist >= 0 && pixels > dist) {
+            pixels = dist - 1;
+        }
+
         /* Handle positioning of map between tile boundaries */
         if (((ctrl->offset + pixels) > TILE_SIZE)) {
             ctrl->offset = (ctrl->offset + pixels) % TILE_SIZE;
@@ -45,6 +50,11 @@ void do_map (ctrl_t *ctrl)
 
     /* Right keypress: scroll map to the left */
     if (ctrl->input.right && ctrl->pos < maxp) {
+        dist = player_distance_right(ctrl);
+        if (dist >= 0 && pixels > dist) {
+            pixels = dist - 1;
+        }
+
         /* Handle positioning of map between tile boundaries */
         if ((ctrl->offset - pixels) < 0) {
             ctrl->offset = TILE_SIZE + (ctrl->offset - pixels);

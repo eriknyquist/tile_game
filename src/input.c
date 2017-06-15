@@ -1,9 +1,6 @@
 #include "defs.h"
-#include "map.h"
-#include "player.h"
 #include "input.h"
-
-static unsigned int accumulator;
+#include "frame.h"
 
 static void set_key_state (ctrl_t *ctrl, int key, unsigned int val)
 {
@@ -21,24 +18,6 @@ static void set_key_state (ctrl_t *ctrl, int key, unsigned int val)
             ctrl->input.up = val;
         break;
     }
-}
-
-void do_frame(ctrl_t *ctrl)
-{
-    unsigned int now;
-
-    now = SDL_GetTicks();
-    ctrl->dt = now - ctrl->lastframe;
-    ctrl->lastframe = now;
-    accumulator += ctrl->dt;
-
-    while (accumulator >= PHYSICS_DT) {
-        do_map(ctrl);
-        do_player(ctrl);
-        accumulator -= PHYSICS_DT;
-    }
-
-    SDL_RenderPresent(ctrl->rend);
 }
 
 void process_event (SDL_Event *event, ctrl_t *ctrl)

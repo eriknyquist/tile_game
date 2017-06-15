@@ -19,7 +19,7 @@
 
 const uint8_t fill[3] = {0, 0, 0};
 
-static void draw_player (ctrl_t *ctrl)
+void draw_player (ctrl_t *ctrl)
 {
     SDL_SetRenderDrawColor(ctrl->rend, fill[0], fill[1], fill[2], 255);
     SDL_RenderFillRect(ctrl->rend, &ctrl->player.rect);
@@ -37,18 +37,59 @@ static void add_gravity(ctrl_t *ctrl)
     }
 }
 
+/* Returns the distance (in pixels) to the nearest map tile to the
+ * left of the player's position on the screen */
+int player_distance_left (ctrl_t *ctrl)
+{
+    return min_positive(
+        tile_obstacle_left(ctrl, ctrl->player.rect.x, ctrl->player.rect.y),
+        tile_obstacle_left(ctrl, ctrl->player.rect.x,
+            ctrl->player.rect.y + PLAYER_SIZE)
+    );
+}
+
+/* Returns the distance (in pixels) to the nearest map tile to the
+ * right of the player's position on the screen */
+int player_distance_right (ctrl_t *ctrl)
+{
+    return min_positive(
+        tile_obstacle_right(ctrl, ctrl->player.rect.x + PLAYER_SIZE,
+            ctrl->player.rect.y),
+        tile_obstacle_right(ctrl, ctrl->player.rect.x + PLAYER_SIZE,
+            ctrl->player.rect.y + PLAYER_SIZE)
+    );
+}
+
+/* Returns the distance (in pixels) to the nearest map tile above
+ * the player's position on the screen */
+int player_distance_up (ctrl_t *ctrl)
+{
+    return min_positive(
+        tile_obstacle_up(ctrl, ctrl->player.rect.x, ctrl->player.rect.y),
+        tile_obstacle_up(ctrl, ctrl->player.rect.x + PLAYER_SIZE,
+            ctrl->player.rect.y)
+    );
+}
+
+/* Returns the distance (in pixels) of the nearest map tile below
+ * the player's position on the screen */
+int player_distance_down (ctrl_t *ctrl)
+{
+    return min_positive(
+        tile_obstacle_down(ctrl, ctrl->player.rect.x,
+            ctrl->player.rect.y + PLAYER_SIZE),
+        tile_obstacle_down(ctrl, ctrl->player.rect.x + PLAYER_SIZE,
+            ctrl->player.rect.y + PLAYER_SIZE)
+    );
+}
+
 static void collisions_top (ctrl_t *ctrl)
 {
     int udist;
 
-    udist = tile_obstacle_up(ctrl, &ctrl->player.rect);
-
-    if (udist >= 1) {
-        if (-(ctrl->player.yvelocity) > udist) {
-            ctrl->player.yvelocity = -(udist - 1);
-        }
-    } else if (udist == 0) {
-        ctrl->player.yvelocity = 0;
+    udist = player_distance_up(ctrl);
+    if (udist >= 0 && -(ctrl->player.yvelocity) > udist) {
+        ctrl->player.yvelocity = -(udist - 1);
     }
 }
 
@@ -56,9 +97,7 @@ static void collisions_bottom (ctrl_t *ctrl)
 {
     int ddist;
 
-    /* Get distance to nearest tile below player */
-    ddist = tile_obstacle_down(ctrl, &ctrl->player.rect);
-
+    ddist = player_distance_down(ctrl);
     if (ddist > 1) {
         add_gravity(ctrl);
 
@@ -82,7 +121,8 @@ static void collisions_bottom (ctrl_t *ctrl)
 
 void calculate_ymovement (ctrl_t *ctrl)
 {
-    if (ctrl->input.up && ctrl->player.grounded) {
+    if (ctrl->input.up && ctrl->player.grounded &&
+            ctrl->player.yvelocity == 0) {
         ctrl->player.yvelocity -= JUMP_ACCEL;
         ctrl->input.up = 0;
     }
@@ -95,7 +135,6 @@ void calculate_ymovement (ctrl_t *ctrl)
 void do_player (ctrl_t *ctrl)
 {
     calculate_ymovement(ctrl);
-
     ctrl->player.rect.y += ctrl->player.yvelocity;
     draw_player(ctrl);
 }

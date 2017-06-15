@@ -4,14 +4,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "SDL2/SDL.h"
+#include "utils.h"
 
 /* If enabled, the framerate will by determined by the refresh rate
  * If disabled, the framerare specified by FPS will be enforced */
 #define VSYNC 1
 
 /* FPS, if fixed */
-#define FPS 60
+#define FPS 30
 #define MS_PER_FRAME (1000 / FPS)
 
 /* Physixcs time-step, milliseconds */
@@ -36,6 +38,12 @@
 
 /* Width of the screen in tiles*/
 #define XTILES_WIDTH (SWIDTH / TILE_SIZE)
+
+/* X movement speed- pixels per sec. */
+#define X_PPS 400
+
+#define MIN(a, b) ((a > b) ? b : a)
+#define MAX(a, b) ((a > b) ? a : b)
 
 typedef struct input {
     uint8_t left;
@@ -70,5 +78,4 @@ typedef struct control {
     unsigned int lastframe;
     int offset;
 } ctrl_t;
-
 #endif
