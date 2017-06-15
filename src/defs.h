@@ -42,6 +42,9 @@
 /* X movement speed- pixels per sec. */
 #define X_PPS 400
 
+/* No. of pixels of map movement for a physics step */
+#define MAP_PIXELS ((PHYSICS_DT / 1000.0) * X_PPS)
+
 #define MIN(a, b) ((a > b) ? b : a)
 #define MAX(a, b) ((a > b) ? a : b)
 

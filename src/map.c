@@ -22,9 +22,8 @@ void do_map (ctrl_t *ctrl)
     int dist;
     int x, y, maxp;
 
-    /* No. of pixels for map movement for this frame, based on
-     * the time elapsed since the previous frame */
-    pixels = (PHYSICS_DT / 1000.0) * X_PPS;
+    /* Number of pixels to move the map */
+    pixels = MAP_PIXELS;
 
     /* Maximum starting position in the map array, taking
      * screen width into account */
@@ -33,7 +32,7 @@ void do_map (ctrl_t *ctrl)
     /* Left keypress: scroll map to the right */
     if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
         dist = player_distance_left(ctrl);
-        if (dist >= 0 && pixels > dist) {
+        if (dist >= 0 && pixels >= dist) {
             pixels = dist - 1;
         }
 
@@ -51,7 +50,7 @@ void do_map (ctrl_t *ctrl)
     /* Right keypress: scroll map to the left */
     if (ctrl->input.right && ctrl->pos < maxp) {
         dist = player_distance_right(ctrl);
-        if (dist >= 0 && pixels > dist) {
+        if (dist >= 0 && pixels >= dist) {
             pixels = dist - 1;
         }
 

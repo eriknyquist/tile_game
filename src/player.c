@@ -101,21 +101,22 @@ static void collisions_bottom (ctrl_t *ctrl)
     if (ddist > 1) {
         add_gravity(ctrl);
 
-        if (ctrl->player.yvelocity > ddist) {
+        if (ctrl->player.yvelocity > (ddist - 1)) {
             /* Ensure we don't move the player inside, or past the tile */
             ctrl->player.yvelocity = ddist - 1;
             ctrl->player.grounded = 1;
         } else {
             ctrl->player.grounded = 0;
         }
-    } else if (ddist == NO_TILES) {
-        add_gravity(ctrl);
-        ctrl->player.grounded = 0;
-    } else if (ddist == BELOW_MAP) {
-        reset_map(ctrl);
-    } else if (ctrl->player.yvelocity > 0) {
+    } else if (ddist == 1 && ctrl->player.yvelocity > 0) {
         ctrl->player.yvelocity = 0;
         ctrl->player.grounded = 1;
+    } else if (ddist == 0) {
+        ctrl->player.rect.y -= 1;
+        ctrl->player.yvelocity = 0;
+        ctrl->player.grounded = 1;
+    } else if (ddist == BELOW_MAP) {
+        reset_map(ctrl);
     }
 }
 
