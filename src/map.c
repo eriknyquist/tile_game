@@ -1,8 +1,7 @@
 #include "defs.h"
 #include "map.h"
 #include "tile.h"
-#include "tile_collisions.h"
-#include "player.h"
+#include "tile_physics.h"
 
 /* Sky blue */
 const uint8_t bgcolor[3] = {102, 204, 255};
@@ -31,7 +30,7 @@ void do_map (ctrl_t *ctrl)
 
     /* Left keypress: scroll map to the right */
     if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
-        dist = player_distance_left(ctrl);
+        dist = tile_distance_left(ctrl, &ctrl->player);
         if (dist >= 0 && pixels >= dist) {
             pixels = dist - 1;
         }
@@ -49,7 +48,7 @@ void do_map (ctrl_t *ctrl)
 
     /* Right keypress: scroll map to the left */
     if (ctrl->input.right && ctrl->pos < maxp) {
-        dist = player_distance_right(ctrl);
+        dist = tile_distance_right(ctrl, &ctrl->player);
         if (dist >= 0 && pixels >= dist) {
             pixels = dist - 1;
         }

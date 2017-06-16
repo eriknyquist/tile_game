@@ -19,6 +19,21 @@
 /* Physixcs time-step, milliseconds */
 #define PHYSICS_DT 20
 
+/* Gravity acceleration, pixels-per-second */
+#define GRAVITY_PPS 75
+
+/* Maximum gravity velocity, pixels-per-second */
+#define MAX_GRAVITY_PPS 1500
+
+/* Gravity increase, in pixels, for a single physics step */
+#define GRAVITY_PIXELS ((PHYSICS_DT / 1000.0) * GRAVITY_PPS)
+
+/* Maximum gravity velocity, in pixels, for a single physics step */
+#define MAX_GRAVITY_PIXELS ((PHYSICS_DT / 1000.0) * MAX_GRAVITY_PPS)
+
+/* Jump velocity boost, pixels */
+#define JUMP_ACCEL 30
+
 /* Window dimensions */
 #define SHEIGHT 1080
 #define SWIDTH  1920
@@ -63,15 +78,16 @@ typedef struct map {
     uint8_t canmoveleft;
 } map_t;
 
-typedef struct player {
+typedef struct moveable {
     SDL_Rect rect;
     int yvelocity;
+    int xvelocity;
     uint8_t grounded;
-} player_t;
+} moveable_t;
 
 typedef struct control {
     map_t map;
-    player_t player;
+    moveable_t player;
     input_t input;
     SDL_Rect colliders[YTILES_HEIGHT][XTILES_WIDTH + 1];
     SDL_Window *win;
