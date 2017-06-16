@@ -11,7 +11,7 @@ void add_gravity(moveable_t *obj)
 }
 
 /* Returns the distance (in pixels) to the nearest map tile to the
- * left of the player's position on the screen */
+ * left of the object's position on the screen */
 int tile_distance_left (ctrl_t *ctrl, moveable_t *obj)
 {
     return min_positive(
@@ -21,7 +21,7 @@ int tile_distance_left (ctrl_t *ctrl, moveable_t *obj)
 }
 
 /* Returns the distance (in pixels) to the nearest map tile to the
- * right of the player's position on the screen */
+ * right of the object's position on the screen */
 int tile_distance_right (ctrl_t *ctrl, moveable_t *obj)
 {
     return min_positive(
@@ -32,7 +32,7 @@ int tile_distance_right (ctrl_t *ctrl, moveable_t *obj)
 }
 
 /* Returns the distance (in pixels) to the nearest map tile above
- * the player's position on the screen */
+ * the object's position on the screen */
 int tile_distance_up (ctrl_t *ctrl, moveable_t *obj)
 {
     return min_positive(
@@ -42,7 +42,7 @@ int tile_distance_up (ctrl_t *ctrl, moveable_t *obj)
 }
 
 /* Returns the distance (in pixels) of the nearest map tile below
- * the player's position on the screen */
+ * the object's position on the screen */
 int tile_distance_down (ctrl_t *ctrl, moveable_t *obj)
 {
     return min_positive(
