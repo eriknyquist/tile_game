@@ -21,6 +21,7 @@ void do_frame(ctrl_t *ctrl)
     /* Advance physics by as many steps as needed
      * to catch up */
     while (accumulator >= PHYSICS_DT) {
+        draw_bg_colour(ctrl);
         do_map(ctrl);
         do_player(ctrl);
         accumulator -= PHYSICS_DT;

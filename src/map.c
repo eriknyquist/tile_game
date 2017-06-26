@@ -2,15 +2,60 @@
 #include "map.h"
 #include "tile.h"
 #include "tile_physics.h"
-
-/* Sky blue */
-const uint8_t bgcolor[3] = {102, 204, 255};
+#include "colours.h"
 
 /* set_bg_color: draws the background colour on the entire window */
-void set_bg_color(ctrl_t *ctrl)
+void draw_bg_colour(ctrl_t *ctrl)
 {
-    SDL_SetRenderDrawColor(ctrl->rend, bgcolor[0], bgcolor[1], bgcolor[2], 255);
+    SDL_SetRenderDrawColor(ctrl->rend, bg_base[0], bg_base[1], bg_base[2], 255);
     SDL_RenderClear(ctrl->rend);
+}
+
+void draw_bg_scenery(ctrl_t *ctrl, int map_pixels)
+{
+    unsigned int map_index;
+    int pixels;
+    int x, y;
+
+    pixels = (map_pixels < BG_PIXELS) ? map_pixels : BG_PIXELS;
+
+    if (ctrl->input.right && ctrl->pos < ctrl->map.max_p) {
+        /* Handle positioning of BG scenery between tile boundaries */
+        if ((ctrl->bgoffset - pixels) < 0) {
+            ctrl->bgoffset = BG_TILE_SIZE + (ctrl->bgoffset - pixels);
+            ctrl->bgpos = (ctrl->bgpos + 1) % ctrl->map.bg_max_x;
+        } else {
+            ctrl->bgoffset -= pixels;
+        }
+    }
+
+    if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
+        /* Handle positioning of BG scenery between tile boundaries */
+        if (((ctrl->bgoffset + pixels) > BG_TILE_SIZE)) {
+            ctrl->bgoffset = (ctrl->bgoffset + pixels) % BG_TILE_SIZE;
+
+            if (ctrl->bgpos >= 1)
+                ctrl->bgpos -= 1;
+            else
+                ctrl->bgpos = ctrl->map.bg_max_x - 1;
+
+        } else {
+            ctrl->bgoffset += pixels;
+        }
+    }
+
+    /* Draw background scenery tiles */
+    for (y = 0; y < BG_YTILES_HEIGHT; ++y) {
+        for (x = 0; x < BG_XTILES_WIDTH + 2; ++x) {
+            map_index = (ctrl->bgpos + x) % ctrl->map.bg_max_x;
+
+            if (ctrl->map.bg[y][map_index] > 0) {
+                draw_bg_tile(ctrl,
+                        ((x * BG_TILE_SIZE) + ctrl->bgoffset) - BG_TILE_SIZE,
+                        y * BG_TILE_SIZE);
+            }
+        }
+    }
 }
 
 /* do_map: draws the on-screen tiles from the currently loaded map, based on the
@@ -19,14 +64,10 @@ void do_map (ctrl_t *ctrl)
 {
     int pixels;
     int dist;
-    int x, y, maxp;
+    int x, y;
 
     /* Number of pixels to move the map */
     pixels = MAP_PIXELS;
-
-    /* Maximum starting position in the map array, taking
-     * screen width into account */
-    maxp = ctrl->map.max_x - (XTILES_WIDTH / 2) - 1;
 
     /* Left keypress: scroll map to the right */
     if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
@@ -47,7 +88,7 @@ void do_map (ctrl_t *ctrl)
     }
 
     /* Right keypress: scroll map to the left */
-    if (ctrl->input.right && ctrl->pos < maxp) {
+    if (ctrl->input.right && ctrl->pos < ctrl->map.max_p) {
         dist = tile_distance_right(ctrl, &ctrl->player);
         if (dist >= 0 && pixels >= dist) {
             pixels = dist - 1;
@@ -66,8 +107,7 @@ void do_map (ctrl_t *ctrl)
     memset(ctrl->colliders, 0,
         sizeof(ctrl->colliders[0][0]) * YTILES_HEIGHT * (XTILES_WIDTH + 1));
 
-    /* Draw background colour */
-    set_bg_color(ctrl);
+    draw_bg_scenery(ctrl, pixels);
 
     /* Draw visible tiles from the map on the screen */
     for (y = 0; y < YTILES_HEIGHT; ++y) {
@@ -75,7 +115,7 @@ void do_map (ctrl_t *ctrl)
             if (ctrl->map.data[y][ctrl->pos + x] > 0) {
                 /* Draw a new tile here at (x,y) */
                  ctrl->colliders[y][x] =
-                     draw_tile(ctrl,
+                     draw_map_tile(ctrl,
                                (x * TILE_SIZE) + ctrl->offset,
                                y * TILE_SIZE);
             }
@@ -91,11 +131,13 @@ void reset_map (ctrl_t *ctrl)
     ctrl->pos = ctrl->map.start_x - (XTILES_WIDTH / 2);
     ctrl->player.yvelocity = 0;
     ctrl->offset = 0;
+    ctrl->bgpos = 0;
+    ctrl->bgoffset = 0;
 }
 
 /* map_from_file: opens file 'filename', and reads map data
  * into 'map' structure. Returns 0 if successful, otherwise -1 */
-int map_from_file (map_t *map, char *filename)
+static int map_from_file (map_t *map, char *filename)
 {
     FILE *fp;
     unsigned int x;
@@ -138,5 +180,68 @@ int map_from_file (map_t *map, char *filename)
     }
 
     fclose(fp);
+    return 0;
+}
+
+static int bg_from_file(map_t *map, char *filename)
+{
+    FILE *fp;
+    unsigned int x;
+    unsigned int y;
+    char c;
+
+    x = 0;
+    y = map->bg_max_x = 0;
+
+    if ((fp = fopen(filename, "rb")) == NULL) {
+        return -1;
+    }
+
+    bg_zero(map);
+
+    while ((c = fgetc(fp)) != EOF) {
+        if (c == '\n' || x >= BG_MAX_X) {
+            if (x > map->bg_max_x)
+                map->bg_max_x = x;
+
+            x = 0;
+            ++y;
+
+            if (y >= BG_MAX_Y)
+                return 0;
+
+        } else {
+            switch (c) {
+                case '*':
+                    map->bg[y][x] = 1;
+                break;
+            }
+
+            ++x;
+        }
+    }
+
+    fclose(fp);
+    return 0;
+}
+
+int load_map (map_t *map, unsigned int num)
+{
+    char filename[256];
+
+    snprintf(filename, sizeof(filename), "maps/%d/%s", num, MAP_FILE_NAME);
+    if (map_from_file(map, filename) != 0) {
+        return -1;
+    }
+
+    snprintf(filename, sizeof(filename), "maps/%d/%s", num, BG_FILE_NAME);
+    if (bg_from_file(map, filename) != 0) {
+        return -1;
+    }
+
+    /* Maximum starting position in the map array, taking
+     * screen width into account */
+    map->max_p = map->max_x - (XTILES_WIDTH / 2) - 1;
+
     return 0;
 }

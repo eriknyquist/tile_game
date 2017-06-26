@@ -12,3 +12,12 @@ int min_positive(int a, int b)
     if (r == INT_MAX) r = MIN(a, b);
     return r;
 }
+
+
+int trajectory_range(int xvelocity, int yvelocity)
+{
+    int time;
+
+    time = (yvelocity / GRAVITY_PIXELS) * 2;
+    return time * xvelocity;
+}

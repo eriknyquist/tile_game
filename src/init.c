@@ -1,8 +1,6 @@
 #include "defs.h"
 #include "map.h"
 
-#define DEFAULT_MAP "maps/1.dat"
-
 #if VSYNC
 #define RENDER_FLAGS (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
 #else
@@ -22,8 +20,8 @@ void init (ctrl_t *ctrl, char *title)
         exit(1);
     }
 
-    if (map_from_file(&ctrl->map, DEFAULT_MAP) != 0) {
-        printf("Error reading "DEFAULT_MAP"\n");
+    if (load_map(&ctrl->map, 1) != 0) {
+        printf("Error reading map data\n");
         exit(1);
     }
 
@@ -31,7 +29,7 @@ void init (ctrl_t *ctrl, char *title)
         SDL_WINDOWPOS_CENTERED, SWIDTH, SHEIGHT, 0);
 
     if (ctrl->win == NULL) {
-        printf("Couldn't create %dx%d window: %s\n", SWIDTH, SHEIGHT, 
+        printf("Couldn't create %dx%d window: %s\n", SWIDTH, SHEIGHT,
             SDL_GetError());
         exit(1);
     }

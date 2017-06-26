@@ -1,11 +1,22 @@
 #include "defs.h"
+#include "colours.h"
 
 #define BORDER_SIZE 5
 
-const uint8_t tfill[3] = {204, 102, 0};
-const uint8_t tline[3] = {0, 0, 0};
+void draw_bg_tile (ctrl_t *ctrl, int pos_x, int pos_y)
+{
+    SDL_Rect r;
 
-SDL_Rect draw_tile (ctrl_t *ctrl, int pos_x, int pos_y)
+    r.x = pos_x;
+    r.y = pos_y;
+    r.w = BG_TILE_SIZE;
+    r.h = BG_TILE_SIZE;
+
+    SDL_SetRenderDrawColor(ctrl->rend, bg_fill[0], bg_fill[1], bg_fill[2], 255);
+    SDL_RenderFillRect(ctrl->rend, &r);
+}
+
+SDL_Rect draw_map_tile (ctrl_t *ctrl, int pos_x, int pos_y)
 {
     SDL_Rect r;
 
@@ -15,14 +26,16 @@ SDL_Rect draw_tile (ctrl_t *ctrl, int pos_x, int pos_y)
     r.h = TILE_SIZE;
 
     /* Draw outer dark square */
-    SDL_SetRenderDrawColor(ctrl->rend, tline[0], tline[1], tline[2], 255);
+    SDL_SetRenderDrawColor(ctrl->rend, map_border[0], map_border[1],
+        map_border[2], 255);
     SDL_RenderFillRect(ctrl->rend, &r);
 
     r.w -= BORDER_SIZE;
     r.h -= BORDER_SIZE;
 
     /* Draw smaller, light coloured square inside */
-    SDL_SetRenderDrawColor(ctrl->rend, tfill[0], tfill[1], tfill[2], 255);
+    SDL_SetRenderDrawColor(ctrl->rend, map_fill[0], map_fill[1],
+        map_fill[2], 255);
     SDL_RenderFillRect(ctrl->rend, &r);
 
     return r;
