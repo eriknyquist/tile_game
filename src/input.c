@@ -1,8 +1,12 @@
 #include "defs.h"
 #include "input.h"
 #include "frame.h"
+#include "scenes.h"
 
-static void set_key_state (ctrl_t *ctrl, int key, unsigned int val)
+static uint8_t paused;
+
+static void set_key_state (ctrl_t *ctrl, game_t *game,
+        int key, unsigned int val)
 {
     switch (key) {
         case SDLK_ESCAPE:
@@ -17,6 +21,14 @@ static void set_key_state (ctrl_t *ctrl, int key, unsigned int val)
         case SDLK_UP:
             ctrl->input.up = val;
         break;
+        case SDLK_p:
+            if (val) {
+                game->current_scene = (paused) ? draw_scene_game :
+                    draw_scene_game_paused;
+                paused = !paused;
+            }
+
+        break;
     }
 }
 
@@ -29,11 +41,11 @@ void process_event (SDL_Event *event, ctrl_t *ctrl, game_t *game)
         break;
         case SDL_KEYDOWN:
             /* Key down event; store it in the input struct */
-            set_key_state(ctrl, event->key.keysym.sym, 1);
+            set_key_state(ctrl, game, event->key.keysym.sym, 1);
         break;
         case SDL_KEYUP:
             /* Key up event; store it in the input struct */
-            set_key_state(ctrl, event->key.keysym.sym, 0);
+            set_key_state(ctrl, game, event->key.keysym.sym, 0);
         break;
         case SDL_QUIT:
             exit(0);

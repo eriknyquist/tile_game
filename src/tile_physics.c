@@ -1,6 +1,7 @@
 #include "defs.h"
 #include "map.h"
 #include "tile_collisions.h"
+#include "utils.h"
 
 
 /* Adds gravity to moveable object 'obj' by modifying

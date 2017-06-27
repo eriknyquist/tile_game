@@ -6,15 +6,32 @@
 
 #define LINE_ENDING(c) (c == '\n' || c == '\r')
 
+static void draw_bg_tiles (ctrl_t *ctrl)
+{
+    unsigned int map_index;
+    int x, y;
+
+    /* Draw background scenery tiles */
+    for (y = 0; y < BG_YTILES_HEIGHT; ++y) {
+        for (x = 0; x < BG_XTILES_WIDTH + 2; ++x) {
+            map_index = (ctrl->bgpos + x) % ctrl->map.bg_max_x;
+
+            if (ctrl->map.bg[y][map_index] > 0) {
+                draw_bg_tile(ctrl,
+                        ((x * BG_TILE_SIZE) + ctrl->bgoffset) - BG_TILE_SIZE,
+                        y * BG_TILE_SIZE);
+            }
+        }
+    }
+}
+
 /* draw_bg_scenery: draws the on-screen tiles from the currently loaded
  * background, based on the current keyboard inputs, and the limiting 'pixels'
  * value provided. The BG scenery will never be moved by more than 'pixels',
  * despite keyboard inputs */
-static void draw_bg_scenery(ctrl_t *ctrl, int map_pixels)
+static void do_bg (ctrl_t *ctrl, int map_pixels)
 {
-    unsigned int map_index;
     int pixels;
-    int x, y;
 
     pixels = (map_pixels < BG_PIXELS) ? map_pixels : BG_PIXELS;
 
@@ -42,26 +59,31 @@ static void draw_bg_scenery(ctrl_t *ctrl, int map_pixels)
             ctrl->bgoffset += pixels;
         }
     }
-
-    /* Draw background scenery tiles */
-    for (y = 0; y < BG_YTILES_HEIGHT; ++y) {
-        for (x = 0; x < BG_XTILES_WIDTH + 2; ++x) {
-            map_index = (ctrl->bgpos + x) % ctrl->map.bg_max_x;
-
-            if (ctrl->map.bg[y][map_index] > 0) {
-                draw_bg_tile(ctrl,
-                        ((x * BG_TILE_SIZE) + ctrl->bgoffset) - BG_TILE_SIZE,
-                        y * BG_TILE_SIZE);
-            }
-        }
-    }
 }
 
 /* set_bg_color: draws the background colour on the entire window */
-void draw_bg_colour(ctrl_t *ctrl)
+static void draw_bg_colour(ctrl_t *ctrl)
 {
     SDL_SetRenderDrawColor(ctrl->rend, bg_base[0], bg_base[1], bg_base[2], 255);
     SDL_RenderClear(ctrl->rend);
+}
+
+static void draw_map_tiles (ctrl_t *ctrl)
+{
+    int x, y;
+
+    /* Draw visible tiles from the map on the screen */
+    for (y = 0; y < YTILES_HEIGHT; ++y) {
+        for (x = (ctrl->pos) ? -1 : 0; x < XTILES_WIDTH + 1; ++x) {
+            if (ctrl->map.data[y][ctrl->pos + x] > 0) {
+                /* Draw a new tile here at (x,y) */
+                 ctrl->colliders[y][x] =
+                     draw_map_tile(ctrl,
+                               (x * TILE_SIZE) + ctrl->offset,
+                               y * TILE_SIZE);
+            }
+        }
+    }
 }
 
 /* do_map: draws the on-screen tiles from the currently loaded map, based on the
@@ -74,7 +96,6 @@ void do_map (ctrl_t *ctrl)
 {
     int pixels;
     int dist;
-    int x, y;
 
     /* Number of pixels to move the map */
     pixels = MAP_PIXELS;
@@ -117,20 +138,14 @@ void do_map (ctrl_t *ctrl)
     memset(ctrl->colliders, 0,
         sizeof(ctrl->colliders[0][0]) * YTILES_HEIGHT * (XTILES_WIDTH + 1));
 
-    draw_bg_scenery(ctrl, pixels);
+    do_bg(ctrl, pixels);
+}
 
-    /* Draw visible tiles from the map on the screen */
-    for (y = 0; y < YTILES_HEIGHT; ++y) {
-        for (x = (ctrl->pos) ? -1 : 0; x < XTILES_WIDTH + 1; ++x) {
-            if (ctrl->map.data[y][ctrl->pos + x] > 0) {
-                /* Draw a new tile here at (x,y) */
-                 ctrl->colliders[y][x] =
-                     draw_map_tile(ctrl,
-                               (x * TILE_SIZE) + ctrl->offset,
-                               y * TILE_SIZE);
-            }
-        }
-    }
+void draw_map (ctrl_t *ctrl)
+{
+    draw_bg_colour(ctrl);
+    draw_bg_tiles(ctrl);
+    draw_map_tiles(ctrl);
 }
 
 /* map_reset: resets the player and map to starting positions */

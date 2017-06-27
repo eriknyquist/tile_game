@@ -1,4 +1,6 @@
 #include "defs.h"
+#include "player.h"
+#include "map.h"
 
 int min_positive(int a, int b)
 {

@@ -12,6 +12,7 @@ void do_frame(ctrl_t *ctrl, game_t *game)
     ctrl->lastframe = now;
 
     /* Draw and render the current scene */
-    game->current_scene(ctrl, game);
-    SDL_RenderPresent(ctrl->rend);
+    if (game->current_scene)
+        game->current_scene(ctrl, game);
+        SDL_RenderPresent(ctrl->rend);
 }

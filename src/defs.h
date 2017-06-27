@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <limits.h>
 #include "SDL2/SDL.h"
-#include "utils.h"
 
 /* If enabled, the framerate will by determined by the refresh rate
  * If disabled, the framerare specified by FPS will be enforced */

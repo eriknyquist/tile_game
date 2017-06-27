@@ -9,8 +9,8 @@
     memset(map->data, 0,\
            sizeof(map->data[0][0]) * (MAX_X + XTILES_WIDTH + 1) * MAX_Y)
 
-void draw_bg_colour (ctrl_t *ctrl);
 void do_map (ctrl_t *ctrl);
+void draw_map (ctrl_t *ctrl);
 void reset_map (ctrl_t *ctrl);
 int load_map (map_t *map, unsigned int level_num);
 

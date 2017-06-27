@@ -40,5 +40,4 @@ void do_player (ctrl_t *ctrl)
 {
     calculate_ymovement(ctrl);
     ctrl->player.rect.y += ctrl->player.yvelocity;
-    draw_player(ctrl);
 }
