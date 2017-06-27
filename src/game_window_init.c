@@ -7,7 +7,8 @@
 #define RENDER_FLAGS 0
 #endif /* VSYNC */
 
-void init (ctrl_t *ctrl, char *title)
+/* Initialises SDL and opens the main game window */
+void game_window_init (ctrl_t *ctrl, char *title)
 {
     memset(ctrl, 0, sizeof(ctrl_t));
 
@@ -20,11 +21,7 @@ void init (ctrl_t *ctrl, char *title)
         exit(1);
     }
 
-    if (load_map(&ctrl->map, 1) != 0) {
-        printf("Error reading map data\n");
-        exit(1);
-    }
-
+    /* Create main window & renderer */
     ctrl->win = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, SWIDTH, SHEIGHT, 0);
 
@@ -34,15 +31,28 @@ void init (ctrl_t *ctrl, char *title)
         exit(1);
     }
 
+    ctrl->rend = SDL_CreateRenderer(ctrl->win, -1, RENDER_FLAGS);
+}
+
+/* Loads data for map 1, initialises timer count value and player screen
+ * position */
+void game_init (ctrl_t *ctrl)
+{
+    /* Load map & background data from files */
+    if (load_map(&ctrl->map, 1) != 0) {
+        printf("Error reading map data\n");
+        exit(1);
+    }
+
+    /* Initialise player & screen position */
     ctrl->lastframe = SDL_GetTicks();
     ctrl->player.rect.w = PLAYER_SIZE;
     ctrl->player.rect.h = PLAYER_SIZE;
     reset_map(ctrl);
-
-    ctrl->rend = SDL_CreateRenderer(ctrl->win, -1, RENDER_FLAGS);
 }
 
-void cleanup (void)
+/* Closes game window and shuts down all initialised SDL subsystems */
+void game_window_cleanup (void)
 {
     /* Shut down SDL */
     SDL_Quit();

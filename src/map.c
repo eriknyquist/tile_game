@@ -4,14 +4,13 @@
 #include "tile_physics.h"
 #include "colours.h"
 
-/* set_bg_color: draws the background colour on the entire window */
-void draw_bg_colour(ctrl_t *ctrl)
-{
-    SDL_SetRenderDrawColor(ctrl->rend, bg_base[0], bg_base[1], bg_base[2], 255);
-    SDL_RenderClear(ctrl->rend);
-}
+#define LINE_ENDING(c) (c == '\n' || c == '\r')
 
-void draw_bg_scenery(ctrl_t *ctrl, int map_pixels)
+/* draw_bg_scenery: draws the on-screen tiles from the currently loaded
+ * background, based on the current keyboard inputs, and the limiting 'pixels'
+ * value provided. The BG scenery will never be moved by more than 'pixels',
+ * despite keyboard inputs */
+static void draw_bg_scenery(ctrl_t *ctrl, int map_pixels)
 {
     unsigned int map_index;
     int pixels;
@@ -58,8 +57,19 @@ void draw_bg_scenery(ctrl_t *ctrl, int map_pixels)
     }
 }
 
+/* set_bg_color: draws the background colour on the entire window */
+void draw_bg_colour(ctrl_t *ctrl)
+{
+    SDL_SetRenderDrawColor(ctrl->rend, bg_base[0], bg_base[1], bg_base[2], 255);
+    SDL_RenderClear(ctrl->rend);
+}
+
 /* do_map: draws the on-screen tiles from the currently loaded map, based on the
- * the current keyboard inputs */
+ * the current keyboard inputs, and the result of tile collision calculations
+ * on the X-plane (tiles to the left or to the right of the player). Map
+ * movement is restricted if there is a map tile blocking the player on this
+ * plane, and that information gets passed on to draw_bg_scenery so that the
+ * BG scenery's movement can be restricted too */
 void do_map (ctrl_t *ctrl)
 {
     int pixels;
@@ -135,6 +145,23 @@ void reset_map (ctrl_t *ctrl)
     ctrl->bgoffset = 0;
 }
 
+/* Detect a sequence of '\r\n' or '\n\r' in the file stream, so we
+ * can treat it as a single line ending */
+static int eat_line_endings(char c, FILE *fp)
+{
+    char last;
+
+    if (!LINE_ENDING(c))
+        return 0;
+
+    last = c;
+    while(((c = fgetc(fp)) != last) && LINE_ENDING(c))
+        last = c;
+
+    ungetc(c, fp);
+    return 1;
+}
+
 /* map_from_file: opens file 'filename', and reads map data
  * into 'map' structure. Returns 0 if successful, otherwise -1 */
 static int map_from_file (map_t *map, char *filename)
@@ -154,7 +181,7 @@ static int map_from_file (map_t *map, char *filename)
     map_zero(map);
 
     while ((c = fgetc(fp)) != EOF) {
-        if (c == '\n' || x >= (MAX_X + (XTILES_WIDTH / 2))) {
+        if (eat_line_endings(c, fp) || x >= (MAX_X + (XTILES_WIDTH / 2))) {
             if ((x + 1) > map->max_x)
                 map->max_x = x + 1;
 
@@ -200,7 +227,7 @@ static int bg_from_file(map_t *map, char *filename)
     bg_zero(map);
 
     while ((c = fgetc(fp)) != EOF) {
-        if (c == '\n' || x >= BG_MAX_X) {
+        if (eat_line_endings(c, fp) || x >= BG_MAX_X) {
             if (x > map->bg_max_x)
                 map->bg_max_x = x;
 

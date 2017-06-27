@@ -4,8 +4,8 @@
 #define SCREEN_TO_XTILE(ctrl, x) ((x - ctrl->offset) / TILE_SIZE)
 #define SCREEN_TO_YTILE(y) (y / TILE_SIZE)
 
-/* Returns the distance (in pixels) to the nearest map tile to the
- * left of a point on the screen */
+/* tile_obstacle_left: returns the distance (in pixels) to the nearest map tile
+ * to the left of a point on the screen */
 int tile_obstacle_left (ctrl_t *ctrl, int x, int y)
 {
     int i;
@@ -31,8 +31,8 @@ int tile_obstacle_left (ctrl_t *ctrl, int x, int y)
     return x - (ctrl->colliders[yM][i].x + TILE_SIZE);
 }
 
-/* Returns the distance (in pixels) to the nearest map tile to the
- * right of a point on the screen */
+/* tile_obstacle_right: returns the distance (in pixels) to the nearest map
+ * tile to the right of a point on the screen */
 int tile_obstacle_right (ctrl_t *ctrl, int x, int y)
 {
     int i;
@@ -58,8 +58,8 @@ int tile_obstacle_right (ctrl_t *ctrl, int x, int y)
     return ctrl->colliders[yM][i].x - x;
 }
 
-/* Returns the distance (in pixels) to the nearest map tile above
- * a point on the screen */
+/* tile_obstacle_up: returns the distance (in pixels) to the nearest map tile
+ * above a point on the screen */
 int tile_obstacle_up (ctrl_t *ctrl, int x, int y)
 {
     int i;
@@ -85,8 +85,8 @@ int tile_obstacle_up (ctrl_t *ctrl, int x, int y)
     return y - (ctrl->colliders[i][xM].y + TILE_SIZE);
 }
 
-/* Returns the distance (in pixels) of the nearest map tile below
- * a point on the screen */
+/* tile_obstacle_down: returns the distance (in pixels) of the nearest map
+ * tile below a point on the screen */
 int tile_obstacle_down (ctrl_t *ctrl, int x, int y)
 {
     int i;
@@ -116,4 +116,3 @@ int tile_obstacle_down (ctrl_t *ctrl, int x, int y)
     /* Return distance between rect and tile */
     return ctrl->colliders[i][xM].y - y;
 }
-

@@ -115,11 +115,15 @@ typedef struct control {
     SDL_Rect colliders[YTILES_HEIGHT][XTILES_WIDTH + 1];
     SDL_Window *win;
     SDL_Renderer *rend;
-    unsigned int dt;
     unsigned int pos;
     unsigned int bgpos;
     unsigned int lastframe;
     int offset;
     int bgoffset;
 } ctrl_t;
+
+typedef struct game {
+    unsigned int dt;
+    void (*current_scene)(ctrl_t *ctrl, struct game *game);
+} game_t;
 #endif

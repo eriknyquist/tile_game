@@ -3,6 +3,8 @@
 #include "tile_collisions.h"
 
 
+/* Adds gravity to moveable object 'obj' by modifying
+ * the object's yvelocity */
 void add_gravity(moveable_t *obj)
 {
     if (obj->yvelocity < MAX_GRAVITY_PIXELS) {
@@ -52,6 +54,8 @@ int tile_distance_down (ctrl_t *ctrl, moveable_t *obj)
     );
 }
 
+/* Performs collision detection and correction for tiles above a
+ * moveable object */
 void tile_collisions_top (ctrl_t *ctrl, moveable_t *obj)
 {
     int udist;
@@ -62,6 +66,8 @@ void tile_collisions_top (ctrl_t *ctrl, moveable_t *obj)
     }
 }
 
+/* Performs collision detection and correction for tiles below a
+ * moveable object */
 void tile_collisions_bottom (ctrl_t *ctrl, moveable_t *obj)
 {
     int ddist;

@@ -1,8 +1,11 @@
 #include "defs.h"
-#include "init.h"
+#include "game_window_init.h"
+#include "scenes.h"
 #include "input.h"
+#include "frame.h"
 
 ctrl_t control;
+game_t game;
 
 #if !VSYNC
 uint32_t frame_timer(uint32_t interval, void *param)
@@ -33,20 +36,24 @@ int main(int argc, char *argv[])
     timer = SDL_AddTimer(MS_PER_FRAME, frame_timer, NULL);
 #endif /* !VSYNC */
 
-    /* Initialize main window */
-    init(&control, "Tile map engine");
-
     /* Call the cleanup function when the program exits */
-    atexit(cleanup);
+    atexit(game_window_cleanup);
+
+    /* Initialize main window */
+    game_window_init(&control, "Tile map engine");
+    game_init(&control);
+
+    /* Go straight to game physics engine (no menus yet) */
+    game.current_scene = draw_scene_game;
 
 #if VSYNC
     while (1) {
         /* Empty the event queue, process events */
         while (SDL_PollEvent(&event))
-            process_event(&event, &control);
+            process_event(&event, &control, &game);
 
-        /* Advance physics, and draw the scene (blocks until next Vsync) */
-        do_frame(&control);
+        /* Draw the current scene (blocks until next Vsync) */
+        do_frame(&control, &game);
     }
 #else
     /* Wait for the next event; in this case (no Vsync), a USEREVENT will

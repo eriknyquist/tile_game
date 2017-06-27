@@ -16,8 +16,8 @@ int min_positive(int a, int b)
 
 int trajectory_range(int xvelocity, int yvelocity)
 {
-    int time;
+    float time;
 
-    time = (yvelocity / GRAVITY_PIXELS) * 2;
-    return time * xvelocity;
+    time = (yvelocity / (float)GRAVITY_PIXELS) * 2.0;
+    return (int)(time * xvelocity);
 }

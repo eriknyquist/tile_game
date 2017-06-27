@@ -20,12 +20,12 @@ static void set_key_state (ctrl_t *ctrl, int key, unsigned int val)
     }
 }
 
-void process_event (SDL_Event *event, ctrl_t *ctrl)
+void process_event (SDL_Event *event, ctrl_t *ctrl, game_t *game)
 {
     switch (event->type) {
         case SDL_USEREVENT:
             /* Frame timer expired; draw the next frame */
-            do_frame(ctrl);
+            do_frame(ctrl, game);
         break;
         case SDL_KEYDOWN:
             /* Key down event; store it in the input struct */

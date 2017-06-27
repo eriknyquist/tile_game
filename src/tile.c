@@ -3,6 +3,7 @@
 
 #define BORDER_SIZE 5
 
+/* draw_bg_tile: draw one background tile */
 void draw_bg_tile (ctrl_t *ctrl, int pos_x, int pos_y)
 {
     SDL_Rect r;
@@ -16,6 +17,7 @@ void draw_bg_tile (ctrl_t *ctrl, int pos_x, int pos_y)
     SDL_RenderFillRect(ctrl->rend, &r);
 }
 
+/* draw_map_tile: draw one map tile */
 SDL_Rect draw_map_tile (ctrl_t *ctrl, int pos_x, int pos_y)
 {
     SDL_Rect r;
