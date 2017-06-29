@@ -1,69 +1,51 @@
 #include "defs.h"
-#include "game_window_init.h"
+#include "config_window.h"
 #include "scenes.h"
 #include "input.h"
+#include "game_window_init.h"
 #include "frame.h"
 
 ctrl_t control;
 game_t game;
 
-#if !VSYNC
-uint32_t frame_timer(uint32_t interval, void *param)
+static int do_game_loop (void)
 {
     SDL_Event event;
-    SDL_UserEvent userevent;
 
-    userevent.type = SDL_USEREVENT;
-    userevent.code = 0;
-    userevent.data1 = NULL;
-    userevent.data2 = NULL;
+    if (control.vsync) {
+        while (1) {
+            /* Empty the event queue, process events */
+            while (SDL_PollEvent(&event))
+                process_event(&event, &control, &game);
 
-    event.type = SDL_USEREVENT;
-    event.user = userevent;
+            /* Draw the current scene (blocks until next Vsync) */
+            if (do_frame(&control, &game))
+                return 1;
+        }
+    } else {
+        /* Wait for the next event; in this case (no Vsync), a USEREVENT will
+         * be generated when the frame timer expires, and process_event() will
+         * be responsible for calling do_frame() */
+        while (SDL_WaitEvent(&event))
+            if (process_event(&event, &control, &game))
+                return 1;
+    }
 
-    SDL_PushEvent(&event);
-    return interval;
+    return 0;
 }
-#endif /* !VSYNC */
 
 int main(int argc, char *argv[])
 {
-    SDL_Event event;
-#if !VSYNC
-    SDL_TimerID timer;
-
-    /* Start the frame timer */
-    timer = SDL_AddTimer(MS_PER_FRAME, frame_timer, NULL);
-#endif /* !VSYNC */
-
     /* Call the cleanup function when the program exits */
     atexit(game_window_cleanup);
 
-    /* Initialize main window */
-    game_window_init(&control, "Tile map engine");
-    game_init(&control);
+    config_window_init(&control, &game);
+    game.current_scene = draw_config_window;
 
-    /* Go straight to game physics engine (no menus yet) */
-    game.current_scene = draw_scene_game;
+    control.vsync = 1;
+    while (1)
+        do_game_loop();
 
-#if VSYNC
-    while (1) {
-        /* Empty the event queue, process events */
-        while (SDL_PollEvent(&event))
-            process_event(&event, &control, &game);
-
-        /* Draw the current scene (blocks until next Vsync) */
-        do_frame(&control, &game);
-    }
-#else
-    /* Wait for the next event; in this case (no Vsync), a USEREVENT will
-     * be generated when the frame timer expires, and process_event() will
-     * be responsible for calling do_frame() */
-    while (SDL_WaitEvent(&event))
-        process_event(&event, &control);
-
-    SDL_RemoveTimer(timer);
-#endif /* VSYNC */
-
+    SDL_RemoveTimer(game.timer);
     exit(0);
 }

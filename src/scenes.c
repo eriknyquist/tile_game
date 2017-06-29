@@ -5,7 +5,7 @@
 /* Draws one full frame of the game scene, advancing the physics
  * engine as many steps as needed to catch up with the time elapsed since
  * the last frame */
-void draw_scene_game (ctrl_t *ctrl, game_t *game)
+int draw_scene_game (ctrl_t *ctrl, game_t *game)
 {
     static unsigned int accumulator;
 
@@ -23,11 +23,15 @@ void draw_scene_game (ctrl_t *ctrl, game_t *game)
         draw_player(ctrl);
         accumulator -= PHYSICS_DT;
     }
+
+    return 0;
 }
 
 /* Draws the current state of the game without advancing the physics engine */
-void draw_scene_game_paused (ctrl_t *ctrl, game_t *game)
+int draw_scene_game_paused (ctrl_t *ctrl, game_t *game)
 {
     draw_map(ctrl);
     draw_player(ctrl);
+
+    return 0;
 }

@@ -3,6 +3,7 @@
 #include "tile.h"
 #include "tile_physics.h"
 #include "colours.h"
+#include "utils.h"
 
 #define LINE_ENDING(c) (c == '\n' || c == '\r')
 
@@ -59,13 +60,6 @@ static void do_bg (ctrl_t *ctrl, int map_pixels)
             ctrl->bgoffset += pixels;
         }
     }
-}
-
-/* set_bg_color: draws the background colour on the entire window */
-static void draw_bg_colour(ctrl_t *ctrl)
-{
-    SDL_SetRenderDrawColor(ctrl->rend, bg_base[0], bg_base[1], bg_base[2], 255);
-    SDL_RenderClear(ctrl->rend);
 }
 
 static void draw_map_tiles (ctrl_t *ctrl)
@@ -143,7 +137,7 @@ void do_map (ctrl_t *ctrl)
 
 void draw_map (ctrl_t *ctrl)
 {
-    draw_bg_colour(ctrl);
+    draw_bg_colour(ctrl, bg_base);
     draw_bg_tiles(ctrl);
     draw_map_tiles(ctrl);
 }
@@ -179,7 +173,7 @@ static int eat_line_endings(char c, FILE *fp)
 
 /* map_from_file: opens file 'filename', and reads map data
  * into 'map' structure. Returns 0 if successful, otherwise -1 */
-static int map_from_file (map_t *map, char *filename)
+static int map_from_file (ctrl_t *ctrl, char *filename)
 {
     FILE *fp;
     unsigned int x;
@@ -187,18 +181,18 @@ static int map_from_file (map_t *map, char *filename)
     char c;
 
     x = XTILES_WIDTH / 2;
-    y = map->max_x = 0;
+    y = ctrl->map.max_x = 0;
 
     if ((fp = fopen(filename, "rb")) == NULL) {
         return -1;
     }
 
-    map_zero(map);
+    map_zero(ctrl);
 
     while ((c = fgetc(fp)) != EOF) {
         if (eat_line_endings(c, fp) || x >= (MAX_X + (XTILES_WIDTH / 2))) {
-            if ((x + 1) > map->max_x)
-                map->max_x = x + 1;
+            if ((x + 1) > ctrl->map.max_x)
+                ctrl->map.max_x = x + 1;
 
             x = XTILES_WIDTH / 2;
             ++y;
@@ -209,11 +203,11 @@ static int map_from_file (map_t *map, char *filename)
         } else {
             switch (c) {
                 case '*':
-                    map->data[y][x] = 1;
+                    ctrl->map.data[y][x] = 1;
                 break;
                 case '@':
-                    map->start_x = x;
-                    map->start_y = y;
+                    ctrl->map.start_x = x;
+                    ctrl->map.start_y = y;
                 break;
             }
 
@@ -225,7 +219,7 @@ static int map_from_file (map_t *map, char *filename)
     return 0;
 }
 
-static int bg_from_file(map_t *map, char *filename)
+static int bg_from_file(ctrl_t *ctrl, char *filename)
 {
     FILE *fp;
     unsigned int x;
@@ -233,18 +227,18 @@ static int bg_from_file(map_t *map, char *filename)
     char c;
 
     x = 0;
-    y = map->bg_max_x = 0;
+    y = ctrl->map.bg_max_x = 0;
 
     if ((fp = fopen(filename, "rb")) == NULL) {
         return -1;
     }
 
-    bg_zero(map);
+    bg_zero(ctrl);
 
     while ((c = fgetc(fp)) != EOF) {
         if (eat_line_endings(c, fp) || x >= BG_MAX_X) {
-            if (x > map->bg_max_x)
-                map->bg_max_x = x;
+            if (x > ctrl->map.bg_max_x)
+                ctrl->map.bg_max_x = x;
 
             x = 0;
             ++y;
@@ -255,7 +249,7 @@ static int bg_from_file(map_t *map, char *filename)
         } else {
             switch (c) {
                 case '*':
-                    map->bg[y][x] = 1;
+                    ctrl->map.bg[y][x] = 1;
                 break;
             }
 
@@ -267,23 +261,23 @@ static int bg_from_file(map_t *map, char *filename)
     return 0;
 }
 
-int load_map (map_t *map, unsigned int num)
+int load_map (ctrl_t *ctrl, unsigned int num)
 {
     char filename[256];
 
     snprintf(filename, sizeof(filename), "maps/%d/%s", num, MAP_FILE_NAME);
-    if (map_from_file(map, filename) != 0) {
+    if (map_from_file(ctrl, filename) != 0) {
         return -1;
     }
 
     snprintf(filename, sizeof(filename), "maps/%d/%s", num, BG_FILE_NAME);
-    if (bg_from_file(map, filename) != 0) {
+    if (bg_from_file(ctrl, filename) != 0) {
         return -1;
     }
 
     /* Maximum starting position in the map array, taking
      * screen width into account */
-    map->max_p = map->max_x - (XTILES_WIDTH / 2) - 1;
+    ctrl->map.max_p = ctrl->map.max_x - (XTILES_WIDTH / 2) - 1;
 
     return 0;
 }

@@ -6,7 +6,7 @@
 
 /* Adds gravity to moveable object 'obj' by modifying
  * the object's yvelocity */
-void add_gravity(moveable_t *obj)
+void add_gravity(ctrl_t *ctrl, moveable_t *obj)
 {
     if (obj->yvelocity < MAX_GRAVITY_PIXELS) {
         obj->yvelocity += GRAVITY_PIXELS;
@@ -75,7 +75,7 @@ void tile_collisions_bottom (ctrl_t *ctrl, moveable_t *obj)
 
     ddist = tile_distance_down(ctrl, obj);
     if (ddist > 1) {
-        add_gravity(obj);
+        add_gravity(ctrl, obj);
 
         if (obj->yvelocity > (ddist - 1)) {
             /* Ensure we don't move object inside, or past the tile */

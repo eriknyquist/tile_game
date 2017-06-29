@@ -1,7 +1,7 @@
 #ifndef TILE_PHYSICS_H_
 #define TILE_PHYSICS_H_
 
-void add_gravity(moveable_t *obj);
+void add_gravity(ctrl_t *ctrl, moveable_t *obj);
 
 int tile_distance_left (ctrl_t *ctrl, moveable_t *obj);
 int tile_distance_right (ctrl_t *ctrl, moveable_t *obj);

@@ -2,7 +2,7 @@
 #include "defs.h"
 
 /* Keeps track of the frame timer, and draws the current scene */
-void do_frame(ctrl_t *ctrl, game_t *game)
+int do_frame(ctrl_t *ctrl, game_t *game)
 {
     unsigned int now;
 
@@ -12,7 +12,12 @@ void do_frame(ctrl_t *ctrl, game_t *game)
     ctrl->lastframe = now;
 
     /* Draw and render the current scene */
-    if (game->current_scene)
-        game->current_scene(ctrl, game);
+    if (game->current_scene) {
+        if(game->current_scene(ctrl, game))
+            return 1;
+
         SDL_RenderPresent(ctrl->rend);
+    }
+
+    return 0;
 }
