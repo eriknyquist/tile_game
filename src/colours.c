@@ -7,7 +7,7 @@ const SDL_Color white = {255, 255, 255};
 const SDL_Color bg_base = {102, 204, 255};
 
 /* Background tile colours */
-const SDL_Color bg_fill = {210, 188, 149};
+const SDL_Color bg_fill = {68, 114, 145};
 
 /* Map tile colours */
 const SDL_Color map_fill = {204, 102, 0};

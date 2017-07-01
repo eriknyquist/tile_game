@@ -100,9 +100,11 @@ typedef struct control {
     map_t map;
     moveable_t player;
     input_t input;
+    SDL_Rect bg_rect;
     SDL_Rect colliders[YTILES_HEIGHT][MAX_XTILES_WIDTH + 1];
     SDL_Window *win;
     SDL_Renderer *rend;
+    SDL_Texture *bg_texture;
     unsigned int pos;
     unsigned int bgpos;
     unsigned int lastframe;

@@ -43,7 +43,6 @@ static void add_glyph (ctrl_t *ctrl, char c)
 
     SDL_QueryTexture(cache[i].texture, NULL, NULL, &cache[i].rect.w,
         &cache[i].rect.h);
-
     SDL_FreeSurface(surface);
 }
 
@@ -79,14 +78,12 @@ void text_init (ctrl_t *ctrl)
 
 void text_quit (ctrl_t *ctrl)
 {
-    unsigned int i;
+    int i;
 
     for (i = 0; i < CACHE_SIZE && cache[i].rect.w > 0; ++i) {
         if (cache[i].texture != NULL)
             SDL_DestroyTexture(cache[i].texture);
     }
-
-    TTF_CloseFont(font);
 }
 
 int text_texture_height (char *s)

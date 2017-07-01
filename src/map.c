@@ -137,7 +137,7 @@ void do_map (ctrl_t *ctrl)
 
 void draw_map (ctrl_t *ctrl)
 {
-    draw_bg_colour(ctrl, bg_base);
+    draw_bg_bmp(ctrl);
     draw_bg_tiles(ctrl);
     draw_map_tiles(ctrl);
 }

@@ -1,5 +1,5 @@
 # Native compilation flags
-CFLAGS = -Wall $(shell sdl2-config --cflags)
+CFLAGS = -Wall -pedantic $(shell sdl2-config --cflags)
 LDFLAGS = $(shell sdl2-config --libs) -lSDL2_ttf
 
 # Win32 cross compilation flags

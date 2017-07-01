@@ -4,9 +4,20 @@
 #include "input.h"
 #include "game_window_init.h"
 #include "frame.h"
+#include "text.h"
 
-ctrl_t control;
-game_t game;
+static ctrl_t control;
+static game_t game;
+
+/* Closes game window and shuts down all initialised SDL subsystems */
+static void cleanup (void)
+{
+    if (control.bg_texture) SDL_DestroyTexture(control.bg_texture);
+    if (control.rend) SDL_DestroyRenderer(control.rend);
+    if (control.win) SDL_DestroyWindow(control.win);
+    text_quit(&control);
+    SDL_Quit();
+}
 
 static int do_game_loop (void)
 {
@@ -37,7 +48,7 @@ static int do_game_loop (void)
 int main(int argc, char *argv[])
 {
     /* Call the cleanup function when the program exits */
-    atexit(game_window_cleanup);
+    atexit(cleanup);
 
     config_window_init(&control, &game);
     game.current_scene = draw_config_window;

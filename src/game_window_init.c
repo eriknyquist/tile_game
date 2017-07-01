@@ -1,9 +1,12 @@
 #include "defs.h"
 #include "map.h"
+#include "text.h"
 
 /* Initialises SDL and opens the main game window */
 void game_window_init (ctrl_t *ctrl, game_t *game, char *title)
 {
+    SDL_Surface *surface;
+
     ctrl->map.start_x = XTILES_WIDTH / 2;
     ctrl->map.start_y = 1;
 
@@ -21,6 +24,21 @@ void game_window_init (ctrl_t *ctrl, game_t *game, char *title)
         game->rflags |= SDL_RENDERER_PRESENTVSYNC;
 
     ctrl->rend = SDL_CreateRenderer(ctrl->win, -1, game->rflags);
+    if (ctrl->rend == NULL) {
+        fprintf(stderr, "Couldn't create renderer: %s\n", SDL_GetError());
+        exit(1);
+    }
+
+    surface = SDL_LoadBMP("bitmaps/sky.bmp");
+    if (surface == NULL) {
+        fprintf(stderr, "Couldn't load BG bitmap: %s\n", SDL_GetError());
+        exit(1);
+    }
+
+    ctrl->bg_texture = SDL_CreateTextureFromSurface(ctrl->rend, surface);
+    SDL_QueryTexture(ctrl->bg_texture, NULL, NULL, &ctrl->bg_rect.w,
+        &ctrl->bg_rect.h);
+    SDL_FreeSurface(surface);
 }
 
 /* Loads data for map 1, initialises timer count value and player screen
@@ -38,11 +56,4 @@ void game_init (ctrl_t *ctrl)
     ctrl->player.rect.w = PLAYER_SIZE;
     ctrl->player.rect.h = PLAYER_SIZE;
     reset_map(ctrl);
-}
-
-/* Closes game window and shuts down all initialised SDL subsystems */
-void game_window_cleanup (void)
-{
-    /* Shut down SDL */
-    SDL_Quit();
 }
