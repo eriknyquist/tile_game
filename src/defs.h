@@ -8,6 +8,8 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 
+#define MAX_BLOCKS 2
+
 /* Physixcs time-step, milliseconds */
 #define PHYSICS_DT 20
 
@@ -27,17 +29,11 @@
 /* Jump velocity boost, pixels */
 #define JUMP_ACCEL (TILE_SIZE * 0.8)
 
-/* Gravity acceleration, pixels-per-second */
-#define GRAVITY_PPS (TILE_SIZE * 3.0)
-
-/* Maximum gravity velocity, pixels-per-second */
-#define MAX_GRAVITY_PPS (GRAVITY_PPS * 10.0)
-
 /* Gravity increase, in pixels, for a single physics step */
-#define GRAVITY_PIXELS ((PHYSICS_DT / 1000.0) * GRAVITY_PPS)
+#define GRAVITY_PIXELS (TILE_SIZE / 15.0)
 
 /* Maximum gravity velocity, in pixels, for a single physics step */
-#define MAX_GRAVITY_PIXELS ((PHYSICS_DT / 1000.0) * MAX_GRAVITY_PPS)
+#define MAX_GRAVITY_PIXELS (GRAVITY_PIXELS * 10.0)
 
 /* Size of player (just a cube for now) */
 #define PLAYER_SIZE (TILE_SIZE / 2.0)
@@ -71,12 +67,16 @@
 #define MIN(a, b) (((a) > (b)) ? (b) : (a))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
+#define SCREEN_TO_XTILE(ctrl, x) ((x - ctrl->offset) / TILE_SIZE)
+#define SCREEN_TO_YTILE(y) (y / TILE_SIZE)
+
 typedef struct input {
     uint8_t left;
     uint8_t right;
     uint8_t up;
     uint8_t down;
     uint8_t enter;
+    uint8_t space;
 } input_t;
 
 typedef struct map {
@@ -105,6 +105,7 @@ typedef struct control {
     SDL_Window *win;
     SDL_Renderer *rend;
     SDL_Texture *bg_texture;
+    unsigned int blocks;
     unsigned int pos;
     unsigned int bgpos;
     unsigned int lastframe;

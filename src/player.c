@@ -1,4 +1,5 @@
 #include "defs.h"
+#include "utils.h"
 #include "tile_physics.h"
 
 const uint8_t fill[3] = {0, 0, 0};
@@ -17,6 +18,36 @@ static void calculate_ymovement (ctrl_t *ctrl)
     tile_collisions_top(ctrl, &ctrl->player);
     tile_collisions_bottom(ctrl, &ctrl->player);
 
+}
+
+static void do_tile_changes (ctrl_t *ctrl)
+{
+    int tile_y;
+
+    if (ctrl->input.enter && ctrl->player.grounded &&
+            ctrl->blocks < MAX_BLOCKS) {
+        tile_y = ctrl->player.rect.y + ctrl->player.rect.h + PLAYER_SIZE;
+
+        if (tile_y < ctrl->screen_height) {
+            if (set_tile_by_screen(ctrl,
+                    ctrl->player.rect.x + (PLAYER_SIZE / 2), tile_y, 0))
+            ++ctrl->blocks;
+        }
+
+        ctrl->input.enter = 0;
+    }
+
+    if (ctrl->input.space && !ctrl->player.grounded && ctrl->blocks > 0) {
+        tile_y = ctrl->player.rect.y + ctrl->player.rect.h + (TILE_SIZE * 2);
+
+        if (tile_y < ctrl->screen_height) {
+            if (!set_tile_by_screen(ctrl,
+                    ctrl->player.rect.x + (PLAYER_SIZE / 2), tile_y, 1))
+            --ctrl->blocks;
+        }
+
+        ctrl->input.space = 0;
+    }
 }
 
 /* draw_player: draws the player on the screen. Just a boring rectangle right
@@ -38,6 +69,7 @@ void init_player (ctrl_t *ctrl)
  * and draw the player at the new position */
 void do_player (ctrl_t *ctrl)
 {
+    do_tile_changes(ctrl);
     calculate_ymovement(ctrl);
     ctrl->player.rect.y += ctrl->player.yvelocity;
 }

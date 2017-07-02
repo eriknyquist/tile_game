@@ -1,9 +1,6 @@
 #include "defs.h"
 #include "tile_collisions.h"
 
-#define SCREEN_TO_XTILE(ctrl, x) ((x - ctrl->offset) / TILE_SIZE)
-#define SCREEN_TO_YTILE(y) (y / TILE_SIZE)
-
 /* tile_obstacle_left: returns the distance (in pixels) to the nearest map tile
  * to the left of a point on the screen */
 int tile_obstacle_left (ctrl_t *ctrl, int x, int y)

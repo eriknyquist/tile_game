@@ -1,6 +1,6 @@
 #include "defs.h"
-#include "map.h"
 #include "text.h"
+#include "map.h"
 
 /* Initialises SDL and opens the main game window */
 void game_window_init (ctrl_t *ctrl, game_t *game, char *title)
@@ -39,6 +39,7 @@ void game_window_init (ctrl_t *ctrl, game_t *game, char *title)
     SDL_QueryTexture(ctrl->bg_texture, NULL, NULL, &ctrl->bg_rect.w,
         &ctrl->bg_rect.h);
     SDL_FreeSurface(surface);
+    text_init(ctrl);
 }
 
 /* Loads data for map 1, initialises timer count value and player screen

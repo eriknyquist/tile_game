@@ -27,6 +27,9 @@ static void set_key_state (ctrl_t *ctrl, game_t *game,
         case SDLK_RETURN:
             ctrl->input.enter = val;
         break;
+        case SDLK_SPACE:
+            ctrl->input.space = val;
+        break;
         case SDLK_p:
             if (val) {
                 game->current_scene = (paused) ? draw_scene_game :
