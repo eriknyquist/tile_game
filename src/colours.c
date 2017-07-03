@@ -12,3 +12,4 @@ const SDL_Color bg_fill = {68, 114, 145};
 /* Map tile colours */
 const SDL_Color map_fill = {204, 102, 0};
 const SDL_Color map_border = {0, 0, 0};
+const SDL_Color moveable_fill = {255, 0, 0};

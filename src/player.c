@@ -1,5 +1,6 @@
 #include "defs.h"
 #include "utils.h"
+#include "tile.h"
 #include "tile_physics.h"
 
 const uint8_t fill[3] = {0, 0, 0};
@@ -29,9 +30,9 @@ static void do_tile_changes (ctrl_t *ctrl)
         tile_y = ctrl->player.rect.y + ctrl->player.rect.h + PLAYER_SIZE;
 
         if (tile_y < ctrl->screen_height) {
-            if (set_tile_by_screen(ctrl,
-                    ctrl->player.rect.x + (PLAYER_SIZE / 2), tile_y, 0))
-            ++ctrl->blocks;
+            if (set_tile_by_screen(ctrl, MOVEABLE_TILE,
+                    ctrl->player.rect.x + (PLAYER_SIZE / 2), tile_y, NO_TILE))
+                ++ctrl->blocks;
         }
 
         ctrl->input.enter = 0;
@@ -41,9 +42,10 @@ static void do_tile_changes (ctrl_t *ctrl)
         tile_y = ctrl->player.rect.y + ctrl->player.rect.h + (TILE_SIZE * 2);
 
         if (tile_y < ctrl->screen_height) {
-            if (!set_tile_by_screen(ctrl,
-                    ctrl->player.rect.x + (PLAYER_SIZE / 2), tile_y, 1))
-            --ctrl->blocks;
+            if (set_tile_by_screen(ctrl, NO_TILE,
+                    ctrl->player.rect.x + (PLAYER_SIZE / 2), tile_y,
+                    MOVEABLE_TILE))
+                --ctrl->blocks;
         }
 
         ctrl->input.space = 0;

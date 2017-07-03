@@ -73,17 +73,20 @@ static void do_bg (ctrl_t *ctrl, int map_pixels)
 
 static void draw_map_tiles (ctrl_t *ctrl)
 {
+    uint8_t sym;
     int x, y;
 
     /* Draw visible tiles from the map on the screen */
     for (y = 0; y < YTILES_HEIGHT; ++y) {
         for (x = (ctrl->pos) ? -1 : 0; x < XTILES_WIDTH + 1; ++x) {
-            if (ctrl->map.data[y][ctrl->pos + x] > 0) {
+            /* Get this tile's symbol */
+            sym = ctrl->map.data[y][ctrl->pos + x];
+
+            if (sym > 0) {
                 /* Draw a new tile here at (x,y) */
-                 ctrl->colliders[y][x] =
-                     draw_map_tile(ctrl,
-                               (x * TILE_SIZE) + ctrl->offset,
-                               y * TILE_SIZE);
+                 ctrl->colliders[y][x] = draw_tile(ctrl, sym,
+                        (x * TILE_SIZE) + ctrl->offset,
+                         y * TILE_SIZE);
             }
         }
     }
@@ -212,10 +215,11 @@ static int map_from_file (ctrl_t *ctrl, char *filename)
 
         } else {
             switch (c) {
-                case '*':
-                    ctrl->map.data[y][x] = 1;
+                case FIXED_TILE:
+                case MOVEABLE_TILE:
+                    ctrl->map.data[y][x] = c;
                 break;
-                case '@':
+                case PLAYER_START:
                     ctrl->map.start_x = x;
                     ctrl->map.start_y = y;
                 break;

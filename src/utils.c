@@ -45,7 +45,7 @@ void draw_bg_bmp (ctrl_t *ctrl)
     }
 }
 
-int set_tile_by_screen (ctrl_t *ctrl, int x, int y, uint8_t value)
+int set_tile_by_screen (ctrl_t *ctrl, uint8_t sym, int x, int y, uint8_t value)
 {
     uint8_t old;
     int xM, yM;
@@ -54,9 +54,13 @@ int set_tile_by_screen (ctrl_t *ctrl, int x, int y, uint8_t value)
     yM = SCREEN_TO_YTILE(y);
 
     old = ctrl->map.data[yM][xM + ctrl->pos];
-    ctrl->map.data[yM][xM + ctrl->pos] = value;
 
-    return old;
+    if (old == sym) {
+        ctrl->map.data[yM][xM + ctrl->pos] = value;
+        return 1;
+    }
+
+    return 0;
 }
 
 int trajectory_range (ctrl_t *ctrl, int xvelocity, int yvelocity)

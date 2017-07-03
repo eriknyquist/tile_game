@@ -7,5 +7,6 @@ extern const SDL_Color bg_base;
 extern const SDL_Color bg_fill;
 extern const SDL_Color map_fill;
 extern const SDL_Color map_border;
+extern const SDL_Color moveable_fill;
 
 #endif
