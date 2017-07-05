@@ -149,8 +149,8 @@ void config_window_init (ctrl_t *ctrl, game_t *game)
     menu_add_value(&menu, "1152x648", 0);
     menu_add_value(&menu, "1280x720", 0);
     menu_add_value(&menu, "1366x768", 0);
-    menu_add_value(&menu, "1600x900", 0);
-    menu_add_value(&menu, "1920x1080", 1);
+    menu_add_value(&menu, "1600x900", 1);
+    menu_add_value(&menu, "1920x1080", 0);
     menu_add_value(&menu, "2569x1440", 0);
 
     menu_add_option(&menu, "Play!", NULL, 1);

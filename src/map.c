@@ -1,6 +1,7 @@
 #include "defs.h"
 #include "map.h"
 #include "tile.h"
+#include "math.h"
 #include "tile_physics.h"
 #include "colours.h"
 #include "utils.h"
@@ -39,9 +40,9 @@ static void draw_bg_tiles (ctrl_t *ctrl)
  * background, based on the current keyboard inputs, and the limiting 'pixels'
  * value provided. The BG scenery will never be moved by more than 'pixels',
  * despite keyboard inputs */
-static void do_bg (ctrl_t *ctrl, int map_pixels)
+static void do_bg (ctrl_t *ctrl, float map_pixels)
 {
-    int pixels;
+    float pixels;
 
     pixels = (map_pixels < BG_PIXELS) ? map_pixels : BG_PIXELS;
 
@@ -49,7 +50,7 @@ static void do_bg (ctrl_t *ctrl, int map_pixels)
         /* Handle positioning of BG scenery between tile boundaries */
         if ((ctrl->bgoffset - pixels) < 0) {
             ctrl->bgoffset = BG_TILE_SIZE + (ctrl->bgoffset - pixels);
-            ctrl->bgpos = (ctrl->bgpos + 1) % ctrl->map.bg_max_x;
+            ctrl->bgpos = fmod(ctrl->bgpos + 1.0, ctrl->map.bg_max_x);
         } else {
             ctrl->bgoffset -= pixels;
         }
@@ -58,7 +59,7 @@ static void do_bg (ctrl_t *ctrl, int map_pixels)
     if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
         /* Handle positioning of BG scenery between tile boundaries */
         if (((ctrl->bgoffset + pixels) > BG_TILE_SIZE)) {
-            ctrl->bgoffset = (ctrl->bgoffset + pixels) % BG_TILE_SIZE;
+            ctrl->bgoffset = fmod(ctrl->bgoffset + pixels, BG_TILE_SIZE);
 
             if (ctrl->bgpos >= 1)
                 ctrl->bgpos -= 1;
@@ -100,7 +101,7 @@ static void draw_map_tiles (ctrl_t *ctrl)
  * BG scenery's movement can be restricted too */
 void do_map (ctrl_t *ctrl)
 {
-    int pixels;
+    float pixels;
     int dist;
 
     /* Number of pixels to move the map */
@@ -109,13 +110,11 @@ void do_map (ctrl_t *ctrl)
     /* Left keypress: scroll map to the right */
     if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
         dist = tile_distance_left(ctrl, &ctrl->player);
-        if (dist >= 0 && pixels >= dist) {
-            pixels = dist - 1;
-        }
+        pixels = clip_movement(pixels, dist, -1.0);
 
         /* Handle positioning of map between tile boundaries */
         if (((ctrl->offset + pixels) > TILE_SIZE)) {
-            ctrl->offset = (ctrl->offset + pixels) % TILE_SIZE;
+            ctrl->offset = fmod(ctrl->offset + pixels, TILE_SIZE);
 
             if (ctrl->pos >= 1)
                 ctrl->pos -= 1;
@@ -127,9 +126,7 @@ void do_map (ctrl_t *ctrl)
     /* Right keypress: scroll map to the left */
     if (ctrl->input.right && ctrl->pos < ctrl->map.max_p) {
         dist = tile_distance_right(ctrl, &ctrl->player);
-        if (dist >= 0 && pixels >= dist) {
-            pixels = dist - 1;
-        }
+        pixels = clip_movement(pixels, dist, 1.0);
 
         /* Handle positioning of map between tile boundaries */
         if ((ctrl->offset - pixels) < 0) {

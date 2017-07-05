@@ -27,13 +27,13 @@
 #define MAX_TILE_SIZE (1080 / MAX_Y)
 
 /* Jump velocity boost, pixels */
-#define JUMP_ACCEL (TILE_SIZE * 0.8)
+#define JUMP_ACCEL TILE_SIZE
 
 /* Gravity increase, in pixels, for a single physics step */
-#define GRAVITY_PIXELS (TILE_SIZE / 15.0)
+#define GRAVITY_PIXELS (TILE_SIZE / 10.0)
 
 /* Maximum gravity velocity, in pixels, for a single physics step */
-#define MAX_GRAVITY_PIXELS (GRAVITY_PIXELS * 10.0)
+#define MAX_GRAVITY_PIXELS (GRAVITY_PIXELS * 8.0)
 
 /* Size of player (just a cube for now) */
 #define PLAYER_SIZE (TILE_SIZE / 2.0)
@@ -91,8 +91,8 @@ typedef struct map {
 
 typedef struct moveable {
     SDL_Rect rect;
-    int yvelocity;
-    int xvelocity;
+    float yvelocity;
+    float xvelocity;
     uint8_t grounded;
 } moveable_t;
 
@@ -112,8 +112,8 @@ typedef struct control {
     int screen_height;
     int screen_width;
     uint8_t vsync;
-    int offset;
-    int bgoffset;
+    float offset;
+    float bgoffset;
 } ctrl_t;
 
 typedef struct game {

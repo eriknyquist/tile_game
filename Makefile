@@ -1,12 +1,12 @@
 # Native compilation flags
 CFLAGS = -Wall -pedantic $(shell sdl2-config --cflags)
-LDFLAGS = $(shell sdl2-config --libs) -lSDL2_ttf
+LDFLAGS = $(shell sdl2-config --libs) -lSDL2_ttf -lm
 
 # Win32 cross compilation flags
 WIN_CC = i686-w64-mingw32-gcc
 SDL_WIN_DIR = /usr/local/cross-tools/i686-w64-mingw32/bin
 WIN_CFLAGS = -Wall -pedantic $(shell $(SDL_WIN_DIR)/sdl2-config --cflags)
-WIN_LDFLAGS = $(shell $(SDL_WIN_DIR)/sdl2-config --libs) -lSDL2_ttf
+WIN_LDFLAGS = $(shell $(SDL_WIN_DIR)/sdl2-config --libs) -lSDL2_ttf -lm
 
 SRCS=$(wildcard src/*.c)
 OBJS=$(SRCS:.c=.o)

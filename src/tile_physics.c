@@ -55,6 +55,21 @@ int tile_distance_down (ctrl_t *ctrl, moveable_t *obj)
     );
 }
 
+float clip_movement (float movement, int distance, float backup)
+{
+    float ret;
+
+    ret = movement;
+
+    if (distance > 0 && (int)movement >= distance) {
+        ret = (float)(distance - 1);
+    } else if (distance == 0) {
+        ret = backup;
+    }
+
+    return ret;
+}
+
 /* Performs collision detection and correction for tiles above a
  * moveable object */
 void tile_collisions_top (ctrl_t *ctrl, moveable_t *obj)
@@ -62,8 +77,11 @@ void tile_collisions_top (ctrl_t *ctrl, moveable_t *obj)
     int udist;
 
     udist = tile_distance_up(ctrl, obj);
-    if (udist >= 0 && -(obj->yvelocity) > udist) {
+
+    if (udist > 0 && -(obj->yvelocity) >= udist) {
         obj->yvelocity = -(udist - 1);
+    } else if (udist == 0) {
+        obj->yvelocity = 1;
     }
 }
 
@@ -72,25 +90,19 @@ void tile_collisions_top (ctrl_t *ctrl, moveable_t *obj)
 void tile_collisions_bottom (ctrl_t *ctrl, moveable_t *obj)
 {
     int ddist;
+    float mvmt;
 
     ddist = tile_distance_down(ctrl, obj);
-    if (ddist > 1) {
+    if (ddist >= 0) {
         add_gravity(ctrl, obj);
 
-        if (obj->yvelocity > (ddist - 1)) {
-            /* Ensure we don't move object inside, or past the tile */
-            obj->yvelocity = ddist - 1;
-            obj->grounded = 1;
-        } else {
+        if ((mvmt = clip_movement(obj->yvelocity, ddist, -1.0)) ==
+                obj->yvelocity) {
             obj->grounded = 0;
+        } else {
+            obj->yvelocity = mvmt;
+            obj->grounded = 1;
         }
-    } else if (ddist == 1 && obj->yvelocity > 0) {
-        obj->yvelocity = 0;
-        obj->grounded = 1;
-    } else if (ddist == 0) {
-        obj->rect.y -= 1;
-        obj->yvelocity = 0;
-        obj->grounded = 1;
     } else if (ddist == BELOW_MAP) {
         reset_map(ctrl);
     }
