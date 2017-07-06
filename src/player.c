@@ -1,6 +1,7 @@
 #include "defs.h"
 #include "utils.h"
 #include "tile.h"
+#include "tile_collisions.h"
 #include "tile_physics.h"
 
 const uint8_t fill[3] = {0, 0, 0};
@@ -23,15 +24,30 @@ static void calculate_ymovement (ctrl_t *ctrl)
 
 static void do_tile_changes (ctrl_t *ctrl)
 {
-    int tile_y;
+    int tile_y, xpick;
+    int xL, xM, xR;
+    int dL, dM, dR;
 
     if (ctrl->input.enter && ctrl->player.grounded &&
             ctrl->blocks < MAX_BLOCKS) {
-        tile_y = ctrl->player.rect.y + ctrl->player.rect.h + PLAYER_SIZE;
+        tile_y = ctrl->player.rect.y + ctrl->player.rect.h + 1;
 
         if (tile_y < ctrl->screen_height) {
-            if (set_tile_by_screen(ctrl, MOVEABLE_TILE,
-                    ctrl->player.rect.x + (PLAYER_SIZE / 2), tile_y, NO_TILE))
+            xL = ctrl->player.rect.x;
+            xM = ctrl->player.rect.x + (PLAYER_SIZE / 2);
+            xR = ctrl->player.rect.x + PLAYER_SIZE;
+
+            dL = tile_obstacle_down(ctrl, xL, tile_y);
+            dM = tile_obstacle_down(ctrl, xM, tile_y);
+            dR = tile_obstacle_down(ctrl, xR, tile_y);
+
+            xpick = xM;
+            if (dL >= 0 && dL < dM)
+                xpick = xL;
+            if (dR >= 0 && dR < dM && dR < dL)
+                xpick = xR;
+
+            if (set_tile_by_screen(ctrl, MOVEABLE_TILE, xpick, tile_y, NO_TILE))
                 ++ctrl->blocks;
         }
 

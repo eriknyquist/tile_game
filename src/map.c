@@ -108,9 +108,10 @@ void do_map (ctrl_t *ctrl)
     pixels = MAP_PIXELS;
 
     /* Left keypress: scroll map to the right */
-    if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
+    if (ctrl->input.left &&
+            !ctrl->input.right && (ctrl->pos > 0 || ctrl->offset < 0)) {
         dist = tile_distance_left(ctrl, &ctrl->player);
-        pixels = clip_movement(pixels, dist, -1.0);
+        pixels = clip_movement(pixels, dist, 1.0);
 
         /* Handle positioning of map between tile boundaries */
         if (((ctrl->offset + pixels) > TILE_SIZE)) {
@@ -121,12 +122,12 @@ void do_map (ctrl_t *ctrl)
         } else {
             ctrl->offset += pixels;
         }
-    }
 
     /* Right keypress: scroll map to the left */
-    if (ctrl->input.right && ctrl->pos < ctrl->map.max_p) {
+    } else if (ctrl->input.right &&
+            !ctrl->input.left && (ctrl->pos < ctrl->map.max_p)) {
         dist = tile_distance_right(ctrl, &ctrl->player);
-        pixels = clip_movement(pixels, dist, 1.0);
+        pixels = clip_movement(pixels, dist, -1.0);
 
         /* Handle positioning of map between tile boundaries */
         if ((ctrl->offset - pixels) < 0) {
@@ -135,6 +136,8 @@ void do_map (ctrl_t *ctrl)
         } else {
             ctrl->offset -= pixels;
         }
+    } else {
+        pixels = 0.0;
     }
 
     /* Reset on-screen collider array */

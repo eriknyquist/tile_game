@@ -61,7 +61,7 @@ float clip_movement (float movement, int distance, float backup)
 
     ret = movement;
 
-    if (distance > 0 && (int)movement >= distance) {
+    if (distance > 0 && ((int)movement) >= (distance - 1)) {
         ret = (float)(distance - 1);
     } else if (distance == 0) {
         ret = backup;

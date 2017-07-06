@@ -8,7 +8,7 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 
-#define MAX_BLOCKS 2
+#define MAX_BLOCKS 1
 
 /* Physixcs time-step, milliseconds */
 #define PHYSICS_DT 20
@@ -24,13 +24,13 @@
 /* Tile size in pixels */
 #define TILE_SIZE (ctrl->screen_height / MAX_Y)
 
-#define MAX_TILE_SIZE (1080 / MAX_Y)
+#define MAX_TILE_SIZE (1440 / MAX_Y)
 
 /* Jump velocity boost, pixels */
-#define JUMP_ACCEL TILE_SIZE
+#define JUMP_ACCEL (TILE_SIZE * 0.8)
 
 /* Gravity increase, in pixels, for a single physics step */
-#define GRAVITY_PIXELS (TILE_SIZE / 10.0)
+#define GRAVITY_PIXELS (TILE_SIZE / 15.0)
 
 /* Maximum gravity velocity, in pixels, for a single physics step */
 #define MAX_GRAVITY_PIXELS (GRAVITY_PIXELS * 8.0)
@@ -44,7 +44,7 @@
 /* Width of the screen in map tiles */
 #define XTILES_WIDTH (ctrl->screen_width / TILE_SIZE)
 
-#define MAX_XTILES_WIDTH (1920 / MAX_TILE_SIZE)
+#define MAX_XTILES_WIDTH (2560 / MAX_TILE_SIZE)
 
 /* BG scenery tile size in pixels */
 #define BG_TILE_SIZE (ctrl->screen_height / BG_MAX_Y)
@@ -56,7 +56,7 @@
 #define BG_YTILES_HEIGHT BG_MAX_Y
 
 /* No. of pixels of map movement for a physics step */
-#define MAP_PIXELS (TILE_SIZE / 4.0)
+#define MAP_PIXELS (TILE_SIZE / 6.0)
 
 /* No. of pixels of BG scenery movement for a physics step */
 #define BG_PIXELS (MAP_PIXELS / 2)
