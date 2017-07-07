@@ -12,6 +12,7 @@
 void do_map (ctrl_t *ctrl);
 void draw_map (ctrl_t *ctrl);
 void reset_map (ctrl_t *ctrl);
-int load_map (ctrl_t *ctrl, unsigned int level_num);
+int load_map (ctrl_t *ctrl);
+int next_level (ctrl_t *ctrl, game_t *game);
 
 #endif

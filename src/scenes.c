@@ -1,6 +1,9 @@
 #include "defs.h"
 #include "player.h"
 #include "map.h"
+#include "text.h"
+#include "utils.h"
+#include "colours.h"
 
 /* Draws one full frame of the game scene, advancing the physics
  * engine as many steps as needed to catch up with the time elapsed since
@@ -19,7 +22,7 @@ int draw_scene_game (ctrl_t *ctrl, game_t *game)
         do_map(ctrl);
         draw_map(ctrl);
 
-        do_player(ctrl);
+        do_player(ctrl, game);
         draw_player(ctrl);
         accumulator -= PHYSICS_DT;
     }
@@ -32,6 +35,22 @@ int draw_scene_game_paused (ctrl_t *ctrl, game_t *game)
 {
     draw_map(ctrl);
     draw_player(ctrl);
+
+    return 0;
+}
+
+int draw_level_banner (ctrl_t *ctrl, game_t *game)
+{
+    unsigned int height, width, x, y;
+
+    height = text_texture_height(game->scene_text);
+    width = text_texture_width(game->scene_text);
+
+    x = (ctrl->screen_width / 2) - (width / 2);
+    y = (ctrl->screen_height / 2) - (height / 2);
+
+    draw_bg_colour(ctrl, black);
+    text_draw(ctrl, game->scene_text, x, y);
 
     return 0;
 }

@@ -1,6 +1,7 @@
 #include "defs.h"
 #include "colours.h"
 #include "tile.h"
+#include "utils.h"
 
 #define BORDER_SIZE 5
 
@@ -75,6 +76,7 @@ SDL_Rect draw_moveable_tile (ctrl_t *ctrl, int pos_x, int pos_y)
 SDL_Rect draw_tile (ctrl_t *ctrl, uint8_t sym, int pos_x, int pos_y)
 {
     SDL_Rect ret;
+    SDL_Rect rect;
 
     switch (sym) {
         case FIXED_TILE:
@@ -82,6 +84,12 @@ SDL_Rect draw_tile (ctrl_t *ctrl, uint8_t sym, int pos_x, int pos_y)
         break;
         case MOVEABLE_TILE:
             ret = draw_moveable_tile(ctrl, pos_x, pos_y);
+        break;
+        case PLAYER_FINISH:
+            rect.x = pos_x;
+            rect.y = pos_y;
+            rect.w = rect.h = TILE_SIZE;
+            draw_coloured_rect(ctrl, &rect, green);
         break;
     }
 

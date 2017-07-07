@@ -95,8 +95,7 @@ static void start_game (option_t *opt, ctrl_t *ctrl, game_t *game)
 {
     SDL_DestroyWindow(ctrl->win);
     game_window_init(ctrl, game, "Tile game");
-    game_init(ctrl);
-    game->current_scene = draw_scene_game;
+    game_init(ctrl, game);
 
     if (!ctrl->vsync) {
         /* Start the frame timer */

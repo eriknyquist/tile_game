@@ -44,17 +44,14 @@ void game_window_init (ctrl_t *ctrl, game_t *game, char *title)
 
 /* Loads data for map 1, initialises timer count value and player screen
  * position */
-void game_init (ctrl_t *ctrl)
+void game_init (ctrl_t *ctrl, game_t *game)
 {
-    /* Load map & background data from files */
-    if (load_map(ctrl, 1) != 0) {
-        fprintf(stderr, "Error reading map data\n");
-        exit(1);
-    }
-
     /* Initialise player & screen position */
     ctrl->lastframe = SDL_GetTicks();
     ctrl->player.rect.w = PLAYER_SIZE;
     ctrl->player.rect.h = PLAYER_SIZE;
-    reset_map(ctrl);
+
+    if (next_level(ctrl, game) != 0) {
+        fprintf(stderr, "Error: unable to load map files for level 1\n");
+    }
 }

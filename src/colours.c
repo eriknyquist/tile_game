@@ -2,6 +2,7 @@
 
 const SDL_Color black = {0, 0, 0};
 const SDL_Color white = {255, 255, 255};
+const SDL_Color green = {0, 255, 0};
 
 /* Sky blue */
 const SDL_Color bg_base = {102, 204, 255};

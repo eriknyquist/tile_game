@@ -3,13 +3,14 @@
 #include "tile.h"
 #include "tile_collisions.h"
 #include "tile_physics.h"
+#include "map.h"
 
 const uint8_t fill[3] = {0, 0, 0};
 
 /* calculate_ymovement: check & correct for collisions between the player and
  * the tile map on the Y-axis, and add acceleration for a jump (NOTE: collision
  * detection/correction for the X-axis is handled by do_map() */
-static void calculate_ymovement (ctrl_t *ctrl)
+static void calculate_ymovement (ctrl_t *ctrl, game_t *game)
 {
     if (ctrl->input.up && ctrl->player.grounded &&
             ctrl->player.yvelocity == 0) {
@@ -17,8 +18,8 @@ static void calculate_ymovement (ctrl_t *ctrl)
         ctrl->input.up = 0;
     }
 
-    tile_collisions_top(ctrl, &ctrl->player);
-    tile_collisions_bottom(ctrl, &ctrl->player);
+    tile_collisions_top(ctrl, game, &ctrl->player);
+    tile_collisions_bottom(ctrl, game, &ctrl->player);
 
 }
 
@@ -85,9 +86,23 @@ void init_player (ctrl_t *ctrl)
 
 /* do_player: perform a full step of physics calculations for the player
  * and draw the player at the new position */
-void do_player (ctrl_t *ctrl)
+void do_player (ctrl_t *ctrl, game_t *game)
 {
+    int x, y;
+
+    x = ctrl->map.finish_x - ctrl->pos;
+    y = ctrl->map.finish_y;
+
+    if ((SCREEN_TO_XTILE(ctrl, ctrl->player.rect.x) == x) &&
+            (SCREEN_TO_YTILE(ctrl->player.rect.y) == y)) {
+        /* Player made it to the end location, level completed */
+        if (next_level(ctrl, game) != 0) {
+            winning_scene(ctrl, game);
+            return;
+        }
+    }
+
     do_tile_changes(ctrl);
-    calculate_ymovement(ctrl);
+    calculate_ymovement(ctrl, game);
     ctrl->player.rect.y += ctrl->player.yvelocity;
 }

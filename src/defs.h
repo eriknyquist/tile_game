@@ -10,6 +10,9 @@
 
 #define MAX_BLOCKS 1
 
+/* Number of seconds to display a level banner */
+#define LEVEL_BANNER_SECS 2
+
 /* Physixcs time-step, milliseconds */
 #define PHYSICS_DT 20
 
@@ -67,8 +70,8 @@
 #define MIN(a, b) (((a) > (b)) ? (b) : (a))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
-#define SCREEN_TO_XTILE(ctrl, x) ((x - ctrl->offset) / TILE_SIZE)
-#define SCREEN_TO_YTILE(y) (y / TILE_SIZE)
+#define SCREEN_TO_XTILE(ctrl, x) ((int)(x - ctrl->offset) / TILE_SIZE)
+#define SCREEN_TO_YTILE(y) ((int)y / TILE_SIZE)
 
 typedef struct input {
     uint8_t left;
@@ -87,6 +90,10 @@ typedef struct map {
     int bg_max_x;
     int start_x;
     int start_y;
+    int finish_x;
+    int finish_y;
+    float x_accel;
+    float bg_x_accel;
 } map_t;
 
 typedef struct moveable {
@@ -109,6 +116,7 @@ typedef struct control {
     unsigned int pos;
     unsigned int bgpos;
     unsigned int lastframe;
+    unsigned int level;
     int screen_height;
     int screen_width;
     uint8_t vsync;
@@ -118,9 +126,12 @@ typedef struct control {
 
 typedef struct game {
     SDL_TimerID timer;
+    char scene_text[256];
     int (*current_scene)(ctrl_t *ctrl, struct game *game);
+    int (*return_scene)(ctrl_t *ctrl, struct game *game);
     uint32_t rflags;
     unsigned int fps;
+    unsigned int scene_text_len;
     unsigned int dt;
 } game_t;
 #endif

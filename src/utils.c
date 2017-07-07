@@ -1,6 +1,9 @@
 #include "defs.h"
 #include "player.h"
 #include "map.h"
+#include "scenes.h"
+
+static void *params[2];
 
 /* draw_coloured_rect: draw coloured rect outline */
 void draw_coloured_rect (ctrl_t *ctrl, SDL_Rect *rect, SDL_Colour c)
@@ -69,4 +72,47 @@ int trajectory_range (ctrl_t *ctrl, int xvelocity, int yvelocity)
 
     time = (yvelocity / (float)GRAVITY_PIXELS) * 2.0;
     return (int)(time * xvelocity);
+}
+
+static uint32_t game_text_timer (uint32_t interval, void *param)
+{
+    game_t *game;
+
+    game = (game_t *)param;
+    game->current_scene = game->return_scene;
+    return 0;
+}
+
+void cut_to_text (game_t *game, char *text, unsigned int len, unsigned int secs)
+{
+    memcpy(game->scene_text, text, len);
+    game->scene_text_len = len;
+    game->current_scene = draw_level_banner;
+    SDL_AddTimer(secs * 1000, game_text_timer, game);
+}
+
+static uint32_t win_scene_timer (uint32_t interval, void *param)
+{
+    void **data;
+    ctrl_t *ctrl;
+    game_t *game;
+
+    data = (void **)param;
+    ctrl = (ctrl_t *)*data;
+    game = (game_t *)*(data + 1);
+
+    ctrl->level = 0;
+    next_level(ctrl, game);
+    return 0;
+}
+
+void winning_scene (ctrl_t *ctrl, game_t *game)
+{
+    params[0] = ctrl;
+    params[1] = game;
+
+    memcpy(game->scene_text, "win", 4);
+    game->scene_text_len = 3;
+    game->current_scene = draw_level_banner;
+    SDL_AddTimer(2000, win_scene_timer, params);
 }

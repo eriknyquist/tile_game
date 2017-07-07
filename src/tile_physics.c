@@ -2,6 +2,7 @@
 #include "map.h"
 #include "tile_collisions.h"
 #include "utils.h"
+#include "scenes.h"
 
 
 /* Adds gravity to moveable object 'obj' by modifying
@@ -72,7 +73,7 @@ float clip_movement (float movement, int distance, float backup)
 
 /* Performs collision detection and correction for tiles above a
  * moveable object */
-void tile_collisions_top (ctrl_t *ctrl, moveable_t *obj)
+void tile_collisions_top (ctrl_t *ctrl, game_t *game, moveable_t *obj)
 {
     int udist;
 
@@ -87,7 +88,7 @@ void tile_collisions_top (ctrl_t *ctrl, moveable_t *obj)
 
 /* Performs collision detection and correction for tiles below a
  * moveable object */
-void tile_collisions_bottom (ctrl_t *ctrl, moveable_t *obj)
+void tile_collisions_bottom (ctrl_t *ctrl, game_t *game, moveable_t *obj)
 {
     int ddist;
     float mvmt;
@@ -104,6 +105,8 @@ void tile_collisions_bottom (ctrl_t *ctrl, moveable_t *obj)
             obj->grounded = 1;
         }
     } else if (ddist == BELOW_MAP) {
+        game->return_scene = draw_scene_game;
+        cut_to_text(game, "dead", 5, 1);
         reset_map(ctrl);
     }
 }

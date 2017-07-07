@@ -6,8 +6,16 @@
 #include "colours.h"
 #include "utils.h"
 #include "text.h"
+#include "scenes.h"
 
 #define LINE_ENDING(c) (c == '\n' || c == '\r')
+
+#define X_ACCEL(ctrl) \
+    ((ctrl->map.x_accel >= MAP_PIXELS) ? MAP_PIXELS : ctrl->map.x_accel + 1)
+
+#define BG_X_ACCEL(ctrl) \
+    (((ctrl->map.x_accel / 2) >= BG_PIXELS) ? BG_PIXELS : \
+    (ctrl->map.x_accel / 2))
 
 static void draw_block_counter (ctrl_t *ctrl)
 {
@@ -44,22 +52,27 @@ static void do_bg (ctrl_t *ctrl, float map_pixels)
 {
     float pixels;
 
-    pixels = (map_pixels < BG_PIXELS) ? map_pixels : BG_PIXELS;
+    if ((pixels = BG_X_ACCEL(ctrl)) > map_pixels)
+        pixels = map_pixels;
 
     if (ctrl->input.right && ctrl->pos < ctrl->map.max_p) {
         /* Handle positioning of BG scenery between tile boundaries */
         if ((ctrl->bgoffset - pixels) < 0) {
+
             ctrl->bgoffset = BG_TILE_SIZE + (ctrl->bgoffset - pixels);
             ctrl->bgpos = fmod(ctrl->bgpos + 1.0, ctrl->map.bg_max_x);
         } else {
             ctrl->bgoffset -= pixels;
         }
+
+        ctrl->map.bg_x_accel = pixels;
     }
 
     if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
         /* Handle positioning of BG scenery between tile boundaries */
         if (((ctrl->bgoffset + pixels) > BG_TILE_SIZE)) {
-            ctrl->bgoffset = fmod(ctrl->bgoffset + pixels, BG_TILE_SIZE);
+            ctrl->bgoffset = fmod(ctrl->bgoffset + pixels,
+                BG_TILE_SIZE);
 
             if (ctrl->bgpos >= 1)
                 ctrl->bgpos -= 1;
@@ -69,6 +82,8 @@ static void do_bg (ctrl_t *ctrl, float map_pixels)
         } else {
             ctrl->bgoffset += pixels;
         }
+
+        ctrl->map.bg_x_accel = pixels;
     }
 }
 
@@ -101,50 +116,50 @@ static void draw_map_tiles (ctrl_t *ctrl)
  * BG scenery's movement can be restricted too */
 void do_map (ctrl_t *ctrl)
 {
-    float pixels;
     int dist;
-
-    /* Number of pixels to move the map */
-    pixels = MAP_PIXELS;
 
     /* Left keypress: scroll map to the right */
     if (ctrl->input.left &&
             !ctrl->input.right && (ctrl->pos > 0 || ctrl->offset < 0)) {
         dist = tile_distance_left(ctrl, &ctrl->player);
-        pixels = clip_movement(pixels, dist, 1.0);
+        ctrl->map.x_accel = X_ACCEL(ctrl);
+        ctrl->map.x_accel = clip_movement(ctrl->map.x_accel, dist, 1.0);
 
         /* Handle positioning of map between tile boundaries */
-        if (((ctrl->offset + pixels) > TILE_SIZE)) {
-            ctrl->offset = fmod(ctrl->offset + pixels, TILE_SIZE);
+        if (((ctrl->offset + ctrl->map.x_accel) > TILE_SIZE)) {
+            ctrl->offset = fmod(ctrl->offset + ctrl->map.x_accel, TILE_SIZE);
 
             if (ctrl->pos >= 1)
                 ctrl->pos -= 1;
         } else {
-            ctrl->offset += pixels;
+            ctrl->offset += ctrl->map.x_accel;
         }
 
     /* Right keypress: scroll map to the left */
     } else if (ctrl->input.right &&
             !ctrl->input.left && (ctrl->pos < ctrl->map.max_p)) {
         dist = tile_distance_right(ctrl, &ctrl->player);
-        pixels = clip_movement(pixels, dist, -1.0);
+        ctrl->map.x_accel = X_ACCEL(ctrl);
+        ctrl->map.x_accel = clip_movement(ctrl->map.x_accel, dist, -1.0);
 
         /* Handle positioning of map between tile boundaries */
-        if ((ctrl->offset - pixels) < 0) {
-            ctrl->offset = TILE_SIZE + (ctrl->offset - pixels);
+        if ((ctrl->offset - ctrl->map.x_accel) < 0) {
+            ctrl->offset = TILE_SIZE + (ctrl->offset - ctrl->map.x_accel);
             ctrl->pos += 1;
         } else {
-            ctrl->offset -= pixels;
+            ctrl->offset -= ctrl->map.x_accel;
         }
+
+        ctrl->map.x_accel = ctrl->map.x_accel;
     } else {
-        pixels = 0.0;
+        ctrl->map.x_accel = 0.0;
     }
 
     /* Reset on-screen collider array */
     memset(ctrl->colliders, 0,
         sizeof(ctrl->colliders[0][0]) * YTILES_HEIGHT * (XTILES_WIDTH + 1));
 
-    do_bg(ctrl, pixels);
+    do_bg(ctrl, ctrl->map.x_accel);
 }
 
 void draw_map (ctrl_t *ctrl)
@@ -223,6 +238,11 @@ static int map_from_file (ctrl_t *ctrl, char *filename)
                     ctrl->map.start_x = x;
                     ctrl->map.start_y = y;
                 break;
+                case PLAYER_FINISH:
+                    ctrl->map.data[y][x] = c;
+                    ctrl->map.finish_x = x;
+                    ctrl->map.finish_y = y;
+                break;
             }
 
             ++x;
@@ -275,16 +295,34 @@ static int bg_from_file(ctrl_t *ctrl, char *filename)
     return 0;
 }
 
-int load_map (ctrl_t *ctrl, unsigned int num)
+int next_level (ctrl_t *ctrl, game_t *game)
+{
+    char buf[20];
+
+    ++ctrl->level;
+    /* Load map & background data from files */
+    if (load_map(ctrl) != 0) {
+        return -1;
+    }
+
+    reset_map(ctrl);
+    snprintf(buf, sizeof(buf), "Level %u", ctrl->level);
+
+    game->return_scene = draw_scene_game;
+    cut_to_text(game, buf, sizeof(buf), LEVEL_BANNER_SECS);
+    return 0;
+}
+
+int load_map (ctrl_t *ctrl)
 {
     char filename[256];
 
-    snprintf(filename, sizeof(filename), "maps/%d/%s", num, MAP_FILE_NAME);
+    snprintf(filename, sizeof(filename), "maps/%d/%s", ctrl->level, MAP_FILE_NAME);
     if (map_from_file(ctrl, filename) != 0) {
         return -1;
     }
 
-    snprintf(filename, sizeof(filename), "maps/%d/%s", num, BG_FILE_NAME);
+    snprintf(filename, sizeof(filename), "maps/%d/%s", ctrl->level, BG_FILE_NAME);
     if (bg_from_file(ctrl, filename) != 0) {
         return -1;
     }
@@ -292,6 +330,5 @@ int load_map (ctrl_t *ctrl, unsigned int num)
     /* Maximum starting position in the map array, taking
      * screen width into account */
     ctrl->map.max_p = ctrl->map.max_x - (XTILES_WIDTH / 2) - 1;
-
     return 0;
 }
