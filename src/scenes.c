@@ -30,6 +30,13 @@ int draw_scene_game (ctrl_t *ctrl, game_t *game)
     return 0;
 }
 
+int draw_scene_game_reset (ctrl_t *ctrl, game_t *game)
+{
+    reset_map(ctrl);
+    game->current_scene = draw_scene_game;
+    return 0;
+}
+
 /* Draws the current state of the game without advancing the physics engine */
 int draw_scene_game_paused (ctrl_t *ctrl, game_t *game)
 {

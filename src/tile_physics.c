@@ -105,8 +105,6 @@ void tile_collisions_bottom (ctrl_t *ctrl, game_t *game, moveable_t *obj)
             obj->grounded = 1;
         }
     } else if (ddist == BELOW_MAP) {
-        game->return_scene = draw_scene_game;
-        cut_to_text(game, "dead", 5, 1);
-        reset_map(ctrl);
+        death(game);
     }
 }

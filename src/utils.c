@@ -83,14 +83,6 @@ static uint32_t game_text_timer (uint32_t interval, void *param)
     return 0;
 }
 
-void cut_to_text (game_t *game, char *text, unsigned int len, unsigned int secs)
-{
-    memcpy(game->scene_text, text, len);
-    game->scene_text_len = len;
-    game->current_scene = draw_level_banner;
-    SDL_AddTimer(secs * 1000, game_text_timer, game);
-}
-
 static uint32_t win_scene_timer (uint32_t interval, void *param)
 {
     void **data;
@@ -104,6 +96,31 @@ static uint32_t win_scene_timer (uint32_t interval, void *param)
     ctrl->level = 0;
     next_level(ctrl, game);
     return 0;
+}
+
+void cut_to_text (game_t *game, char *text, unsigned int len, unsigned int secs)
+{
+    memcpy(game->scene_text, text, len);
+    game->scene_text_len = len;
+    game->current_scene = draw_level_banner;
+    SDL_AddTimer(secs * 1000, game_text_timer, game);
+}
+
+static uint32_t death_timer (uint32_t interval, void *param)
+{
+    game_t *game;
+
+    game = (game_t *)param;
+
+    game->return_scene = draw_scene_game_reset;
+    cut_to_text(game, "dead", 5, 1);
+    return 0;
+}
+
+void death (game_t *game)
+{
+    game->current_scene = draw_scene_game_paused;
+    SDL_AddTimer(1000, death_timer, game);
 }
 
 void winning_scene (ctrl_t *ctrl, game_t *game)
