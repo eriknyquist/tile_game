@@ -79,6 +79,7 @@ typedef struct input {
     uint8_t up;
     uint8_t down;
     uint8_t enter;
+    uint8_t shift;
     uint8_t space;
 } input_t;
 

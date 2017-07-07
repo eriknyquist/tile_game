@@ -29,7 +29,7 @@ static void do_tile_changes (ctrl_t *ctrl)
     int xL, xM, xR;
     int dL, dM, dR;
 
-    if (ctrl->input.enter && ctrl->player.grounded &&
+    if (ctrl->input.shift && ctrl->player.grounded &&
             ctrl->blocks < MAX_BLOCKS) {
         tile_y = ctrl->player.rect.y + ctrl->player.rect.h + 1;
 
@@ -52,7 +52,7 @@ static void do_tile_changes (ctrl_t *ctrl)
                 ++ctrl->blocks;
         }
 
-        ctrl->input.enter = 0;
+        ctrl->input.shift = 0;
     }
 
     if (ctrl->input.space && !ctrl->player.grounded && ctrl->blocks > 0) {
