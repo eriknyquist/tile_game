@@ -50,6 +50,9 @@ int main(int argc, char *argv[])
     /* Call the cleanup function when the program exits */
     atexit(cleanup);
 
+    memset(&game, 0, sizeof(game_t));
+    game.dt_factor = 1.0;
+
     config_window_init(&control, &game);
     game.current_scene = draw_config_window;
 

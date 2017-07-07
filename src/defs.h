@@ -81,6 +81,7 @@ typedef struct input {
     uint8_t enter;
     uint8_t shift;
     uint8_t space;
+    uint8_t t;
 } input_t;
 
 typedef struct map {
@@ -135,5 +136,7 @@ typedef struct game {
     unsigned int fps;
     unsigned int scene_text_len;
     unsigned int dt;
+    float dt_factor;
+    uint8_t slomo;
 } game_t;
 #endif

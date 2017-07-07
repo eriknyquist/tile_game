@@ -41,6 +41,9 @@ static void set_key_state (ctrl_t *ctrl, game_t *game,
             }
 
         break;
+        case SDLK_t:
+            ctrl->input.t = val;
+        break;
     }
 }
 

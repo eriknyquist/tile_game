@@ -12,9 +12,15 @@ int draw_scene_game (ctrl_t *ctrl, game_t *game)
 {
     static unsigned int accumulator;
 
+    if (ctrl->input.t) {
+        game->slomo = !game->slomo;
+        game->dt_factor = (game->slomo) ? 0.3 : 1.0;
+        ctrl->input.t = 0;
+    }
+
     /* Accumulator tracks how many milliseconds of physics need to be
      * simulated before we can render the next frame */
-    accumulator += game->dt;
+    accumulator += (unsigned int)(game->dt * game->dt_factor);
 
     /* Advance physics by as many steps as needed
      * to catch up */
