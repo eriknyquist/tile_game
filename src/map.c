@@ -177,9 +177,11 @@ void reset_map (ctrl_t *ctrl)
     ctrl->player.rect.y = TILE_SIZE * ctrl->map.start_y + 1;
     ctrl->pos = ctrl->map.start_x - (XTILES_WIDTH / 2);
     ctrl->player.yvelocity = 0;
+    ctrl->blocks = 0;
     ctrl->offset = 0;
     ctrl->bgpos = 0;
     ctrl->bgoffset = 0;
+    memcpy(ctrl->map.data, ctrl->map.reset_copy, MAX_Y * MAX_X);
 }
 
 /* Detect a sequence of '\r\n' or '\n\r' in the file stream, so we
@@ -305,10 +307,9 @@ int next_level (ctrl_t *ctrl, game_t *game)
         return -1;
     }
 
-    reset_map(ctrl);
     snprintf(buf, sizeof(buf), "Level %u", ctrl->level);
 
-    game->return_scene = draw_scene_game;
+    game->return_scene = draw_scene_game_reset;
     cut_to_text(game, buf, sizeof(buf), LEVEL_BANNER_SECS);
     return 0;
 }
@@ -321,6 +322,10 @@ int load_map (ctrl_t *ctrl)
     if (map_from_file(ctrl, filename) != 0) {
         return -1;
     }
+
+    /* Make a copy of initial map state, to use for a full reset; simple,
+     * but uses more memory... */
+    memcpy(ctrl->map.reset_copy, ctrl->map.data, MAX_X * MAX_Y);
 
     snprintf(filename, sizeof(filename), "maps/%d/%s", ctrl->level, BG_FILE_NAME);
     if (bg_from_file(ctrl, filename) != 0) {

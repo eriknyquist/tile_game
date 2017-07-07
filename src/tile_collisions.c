@@ -1,4 +1,5 @@
 #include "defs.h"
+#include "tile.h"
 #include "tile_collisions.h"
 
 /* tile_obstacle_left: returns the distance (in pixels) to the nearest map tile
@@ -6,6 +7,7 @@
 int tile_obstacle_left (ctrl_t *ctrl, int x, int y)
 {
     int i;
+    uint8_t map_sym;
     unsigned int xM, yM;
 
     /* x/y of tile containing the rect's right edge */
@@ -14,7 +16,8 @@ int tile_obstacle_left (ctrl_t *ctrl, int x, int y)
 
     /* Loop through tiles to the left of point, find the first obstacle */
     for (i = xM - 1; i >= 0; --i) {
-        if (ctrl->map.data[yM][ctrl->pos + i]) {
+        map_sym = ctrl->map.data[yM][ctrl->pos + i];
+        if (map_sym > 0 && map_sym != PLAYER_FINISH) {
             break;
         }
     }

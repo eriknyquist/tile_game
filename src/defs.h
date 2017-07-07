@@ -85,6 +85,7 @@ typedef struct input {
 
 typedef struct map {
     uint8_t data[MAX_Y][MAX_X + MAX_XTILES_WIDTH + 1];
+    uint8_t reset_copy[MAX_Y][MAX_X + MAX_XTILES_WIDTH + 1];
     uint8_t bg[BG_MAX_Y][BG_MAX_X];
     int max_x;
     int max_p;
