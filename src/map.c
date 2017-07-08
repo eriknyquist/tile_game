@@ -284,7 +284,7 @@ static int bg_from_file(ctrl_t *ctrl, char *filename)
 
         } else {
             switch (c) {
-                case '*':
+                case FIXED_TILE:
                     ctrl->map.bg[y][x] = 1;
                 break;
             }

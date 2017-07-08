@@ -17,7 +17,7 @@
 #define PHYSICS_DT 17
 
 /* Map array dimensions */
-#define MAX_X 512
+#define MAX_X 1024
 #define MAX_Y 16
 
 /* BG scenery array dimensions */
