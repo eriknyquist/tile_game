@@ -4,7 +4,7 @@
 #define NO_TILE       '\0'
 #define FIXED_TILE    '*'
 #define MOVEABLE_TILE 'x'
-#define PLAYER_START  '@'
+#define PLAYER_START  'S'
 #define PLAYER_FINISH 'F'
 
 SDL_Rect draw_map_tile (ctrl_t *ctrl, int pos_x, int pos_y);
