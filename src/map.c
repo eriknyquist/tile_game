@@ -11,7 +11,7 @@
 #define LINE_ENDING(c) (c == '\n' || c == '\r')
 
 #define X_ACCEL(ctrl) \
-    ((ctrl->map.x_accel >= MAP_PIXELS) ? MAP_PIXELS : ctrl->map.x_accel + 1)
+    ((ctrl->map.x_accel >= MAP_PIXELS) ? MAP_PIXELS : ctrl->map.x_accel + 0.5)
 
 #define BG_X_ACCEL(ctrl) \
     (((ctrl->map.x_accel / 2) >= BG_PIXELS) ? BG_PIXELS : \
@@ -181,7 +181,7 @@ void reset_map (ctrl_t *ctrl)
     ctrl->offset = 0;
     ctrl->bgpos = 0;
     ctrl->bgoffset = 0;
-    memcpy(ctrl->map.data, ctrl->map.reset_copy, MAX_Y * MAX_X);
+    memcpy(ctrl->map.data, ctrl->map.reset_copy, sizeof(ctrl->map.data));
 }
 
 /* Detect a sequence of '\r\n' or '\n\r' in the file stream, so we
@@ -325,7 +325,7 @@ int load_map (ctrl_t *ctrl)
 
     /* Make a copy of initial map state, to use for a full reset; simple,
      * but uses more memory... */
-    memcpy(ctrl->map.reset_copy, ctrl->map.data, MAX_X * MAX_Y);
+    memcpy(ctrl->map.reset_copy, ctrl->map.data, sizeof(ctrl->map.data));
 
     snprintf(filename, sizeof(filename), "maps/%d/%s", ctrl->level, BG_FILE_NAME);
     if (bg_from_file(ctrl, filename) != 0) {
