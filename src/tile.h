@@ -2,7 +2,7 @@
 #define TILE_H_
 
 #define NO_TILE       '\0'
-#define FIXED_TILE    '*'
+#define FIXED_TILE    '#'
 #define MOVEABLE_TILE 'x'
 #define PLAYER_START  'S'
 #define PLAYER_FINISH 'F'
