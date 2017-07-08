@@ -50,9 +50,6 @@ static void fps_setval (option_t *opt, ctrl_t *ctrl, game_t *game)
         case 6:
             game->fps = 60;
         break;
-        case 7:
-            game->fps = 90;
-        break;
     }
 }
 
@@ -138,7 +135,6 @@ void config_window_init (ctrl_t *ctrl, game_t *game)
     menu_add_value(&menu, "25", 0);
     menu_add_value(&menu, "30", 1);
     menu_add_value(&menu, "60", 0);
-    menu_add_value(&menu, "90", 0);
 
     menu_add_option(&menu, "VSync", vsync_setval, 0);
     menu_add_value(&menu, "no", 0);
