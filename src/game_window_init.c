@@ -1,12 +1,11 @@
 #include "defs.h"
 #include "text.h"
 #include "map.h"
+#include "bitmap_manager.h"
 
 /* Initialises SDL and opens the main game window */
 void game_window_init (ctrl_t *ctrl, game_t *game, char *title)
 {
-    SDL_Surface *surface;
-
     ctrl->map.start_x = XTILES_WIDTH / 2;
     ctrl->map.start_y = 1;
 
@@ -29,17 +28,12 @@ void game_window_init (ctrl_t *ctrl, game_t *game, char *title)
         exit(1);
     }
 
-    surface = SDL_LoadBMP("bitmaps/sky.bmp");
-    if (surface == NULL) {
-        fprintf(stderr, "Couldn't load BG bitmap: %s\n", SDL_GetError());
-        exit(1);
-    }
+    ctrl->images.bg_fixed =
+        load_bitmap(ctrl, "bitmaps/sky.bmp", &ctrl->bg_rect);
+    ctrl->images.hud_life =
+        load_bitmap(ctrl, "bitmaps/hud_life_icon.bmp", NULL);
 
-    ctrl->bg_texture = SDL_CreateTextureFromSurface(ctrl->rend, surface);
-    SDL_QueryTexture(ctrl->bg_texture, NULL, NULL, &ctrl->bg_rect.w,
-        &ctrl->bg_rect.h);
-    SDL_FreeSurface(surface);
-    text_init(ctrl);
+    text_init(ctrl, ctrl->font_size);
 }
 
 /* Loads data for map 1, initialises timer count value and player screen
@@ -50,6 +44,7 @@ void game_init (ctrl_t *ctrl, game_t *game)
     ctrl->lastframe = SDL_GetTicks();
     ctrl->player.rect.w = PLAYER_SIZE;
     ctrl->player.rect.h = PLAYER_SIZE;
+    ctrl->max_blocks = 1;
 
     if (next_level(ctrl, game) != 0) {
         fprintf(stderr, "Error: unable to load map files for level 1\n");

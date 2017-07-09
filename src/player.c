@@ -30,7 +30,7 @@ static void do_tile_changes (ctrl_t *ctrl)
     int dL, dM, dR;
 
     if (ctrl->input.shift && ctrl->player.grounded &&
-            ctrl->blocks < MAX_BLOCKS) {
+            ctrl->blocks < ctrl->max_blocks) {
         tile_y = ctrl->player.rect.y + ctrl->player.rect.h + 1;
 
         if (tile_y < ctrl->screen_height) {

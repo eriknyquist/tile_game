@@ -4,6 +4,7 @@
 #include "text.h"
 #include "utils.h"
 #include "colours.h"
+#include "hud.h"
 
 /* Draws one full frame of the game scene, advancing the physics
  * engine as many steps as needed to catch up with the time elapsed since
@@ -30,6 +31,7 @@ int draw_scene_game (ctrl_t *ctrl, game_t *game)
 
         do_player(ctrl, game);
         draw_player(ctrl);
+        draw_hud(ctrl);
         accumulator -= PHYSICS_DT;
     }
 
@@ -48,6 +50,7 @@ int draw_scene_game_paused (ctrl_t *ctrl, game_t *game)
 {
     draw_map(ctrl);
     draw_player(ctrl);
+    draw_hud(ctrl);
 
     return 0;
 }

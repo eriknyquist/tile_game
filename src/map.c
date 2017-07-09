@@ -17,14 +17,6 @@
     (((ctrl->map.x_accel / 2) >= BG_PIXELS) ? BG_PIXELS : \
     (ctrl->map.x_accel / 2))
 
-static void draw_block_counter (ctrl_t *ctrl)
-{
-    char buf[10];
-
-    snprintf(buf, sizeof(buf), "%u/%d", ctrl->blocks, MAX_BLOCKS);
-    text_draw(ctrl, buf, 100, 100);
-}
-
 static void draw_bg_tiles (ctrl_t *ctrl)
 {
     unsigned int map_index;
@@ -167,7 +159,6 @@ void draw_map (ctrl_t *ctrl)
     draw_bg_bmp(ctrl);
     draw_bg_tiles(ctrl);
     draw_map_tiles(ctrl);
-    draw_block_counter(ctrl);
 }
 
 /* map_reset: resets the player and map to starting positions */

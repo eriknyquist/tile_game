@@ -8,8 +8,6 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 
-#define MAX_BLOCKS 1
-
 /* Number of seconds to display a level banner */
 #define LEVEL_BANNER_SECS 2
 
@@ -33,7 +31,7 @@
 #define JUMP_ACCEL (TILE_SIZE * 0.7)
 
 /* Gravity increase, in pixels, for a single physics step */
-#define GRAVITY_PIXELS (TILE_SIZE / 19.0)
+#define GRAVITY_PIXELS (TILE_SIZE / 20.0)
 
 /* Maximum gravity velocity, in pixels, for a single physics step */
 #define MAX_GRAVITY_PIXELS (GRAVITY_PIXELS * 8.0)
@@ -106,22 +104,29 @@ typedef struct moveable {
     uint8_t grounded;
 } moveable_t;
 
+typedef struct images {
+    SDL_Texture *bg_fixed;
+    SDL_Texture *hud_life;
+} images_t;
+
 typedef struct control {
     map_t map;
     moveable_t player;
     input_t input;
+    images_t images;
     SDL_Rect bg_rect;
     SDL_Rect colliders[YTILES_HEIGHT][MAX_XTILES_WIDTH + 1];
     SDL_Window *win;
     SDL_Renderer *rend;
-    SDL_Texture *bg_texture;
     unsigned int blocks;
+    unsigned int max_blocks;
     unsigned int pos;
     unsigned int bgpos;
     unsigned int lastframe;
     unsigned int level;
     int screen_height;
     int screen_width;
+    int font_size;
     uint8_t vsync;
     float offset;
     float bgoffset;

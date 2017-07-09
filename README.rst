@@ -5,11 +5,14 @@ Controls
 ########
 ::
 
-    Move/jump:     Arrow keys
-    Take a block:  Right shift
-    Drop a block:  Space
-    Pause:         p
-    Quit:          Esc.
+    Move/jump      : Arrow keys
+    Take a block   : Right shift
+    Drop a block   : Space
+    Pause          : p
+    Quit           : Esc.
+
+    Toggle slow-mo : t
+    (useful for debugging)
 
 Creating new levels
 ###################

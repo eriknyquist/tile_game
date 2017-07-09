@@ -59,26 +59,32 @@ static void resolution_setval (option_t *opt, ctrl_t *ctrl, game_t *game)
         case 0:
             ctrl->screen_width = 1152;
             ctrl->screen_height = 648;
+            ctrl->font_size = 35;
         break;
         case 1:
             ctrl->screen_width = 1280;
             ctrl->screen_height = 720;
+            ctrl->font_size = 38;
         break;
         case 2:
             ctrl->screen_width = 1366;
             ctrl->screen_height = 768;
+            ctrl->font_size = 40;
         break;
         case 3:
             ctrl->screen_width = 1600;
             ctrl->screen_height = 900;
+            ctrl->font_size = 48;
         break;
         case 4:
             ctrl->screen_width = 1920;
             ctrl->screen_height = 1080;
+            ctrl->font_size = 58;
         break;
         case 5:
             ctrl->screen_width = 2560;
             ctrl->screen_height = 1440;
+            ctrl->font_size = 77;
         break;
     }
 }
@@ -125,7 +131,7 @@ void config_window_init (ctrl_t *ctrl, game_t *game)
     ctrl->rend = SDL_CreateRenderer(ctrl->win, -1, game->rflags);
 
     /* Build game config. menu */
-    text_init(ctrl);
+    text_init(ctrl, 48);
     menu_init(&menu);
     menu_add_option(&menu, "FPS", fps_setval, 0);
     menu_add_value(&menu, "10", 0);

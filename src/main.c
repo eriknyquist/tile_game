@@ -3,6 +3,7 @@
 #include "scenes.h"
 #include "input.h"
 #include "game_window_init.h"
+#include "bitmap_manager.h"
 #include "frame.h"
 #include "text.h"
 
@@ -12,10 +13,10 @@ static game_t game;
 /* Closes game window and shuts down all initialised SDL subsystems */
 static void cleanup (void)
 {
-    if (control.bg_texture) SDL_DestroyTexture(control.bg_texture);
     if (control.rend) SDL_DestroyRenderer(control.rend);
     if (control.win) SDL_DestroyWindow(control.win);
     text_quit(&control);
+    destroy_bitmaps();
     SDL_Quit();
 }
 

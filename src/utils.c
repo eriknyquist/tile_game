@@ -43,7 +43,8 @@ void draw_bg_bmp (ctrl_t *ctrl)
         for (j = 0; j <= (ctrl->screen_width / ctrl->bg_rect.w); ++j) {
             ctrl->bg_rect.y = i * ctrl->bg_rect.h;
             ctrl->bg_rect.x = j * ctrl->bg_rect.w;
-            SDL_RenderCopy(ctrl->rend, ctrl->bg_texture, NULL, &ctrl->bg_rect);
+            SDL_RenderCopy(ctrl->rend, ctrl->images.bg_fixed, NULL,
+                &ctrl->bg_rect);
         }
     }
 }
