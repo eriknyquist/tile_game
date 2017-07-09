@@ -94,8 +94,9 @@ static void vsync_setval (option_t *opt, ctrl_t *ctrl, game_t *game)
     ctrl->vsync = opt->vi;
 }
 
-static void start_game (option_t *opt, ctrl_t *ctrl, game_t *game)
+static void start_game (ctrl_t *ctrl, game_t *game)
 {
+    text_quit(ctrl);
     SDL_DestroyWindow(ctrl->win);
     game_window_init(ctrl, game, "Tile game");
     game_init(ctrl, game);
@@ -178,7 +179,7 @@ int draw_config_window (ctrl_t *ctrl, game_t *game)
         if (menu.li == menu.max) {
             /* Last menu item-- "Play!". Start the game */
             menu_set_values(&menu, ctrl, game);
-            start_game(NULL, ctrl, game);
+            start_game(ctrl, game);
             ret = 1;
         } else if (menu.options[menu.li].max > 0) {
             i = menu.options[menu.li].vi;
