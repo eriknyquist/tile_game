@@ -55,7 +55,7 @@ int draw_scene_game_paused (ctrl_t *ctrl, game_t *game)
     return 0;
 }
 
-int draw_level_banner (ctrl_t *ctrl, game_t *game)
+int draw_scene_text (ctrl_t *ctrl, game_t *game)
 {
     unsigned int height, width, x, y;
 

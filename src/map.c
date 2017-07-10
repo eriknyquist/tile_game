@@ -297,7 +297,6 @@ int next_level (ctrl_t *ctrl, game_t *game)
     }
 
     snprintf(buf, sizeof(buf), "Level %u", ctrl->level);
-
     game->return_scene = draw_scene_game_reset;
     cut_to_text(game, buf, sizeof(buf), LEVEL_BANNER_SECS);
     return 0;

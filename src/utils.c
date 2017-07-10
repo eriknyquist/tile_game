@@ -104,7 +104,7 @@ void cut_to_text (game_t *game, char *text, unsigned int len, unsigned int secs)
 {
     memcpy(game->scene_text, text, len);
     game->scene_text_len = len;
-    game->current_scene = draw_level_banner;
+    game->current_scene = draw_scene_text;
     SDL_AddTimer(secs * 1000, game_text_timer, game);
 }
 
@@ -152,6 +152,6 @@ void winning_scene (ctrl_t *ctrl, game_t *game)
 
     memcpy(game->scene_text, "win", 4);
     game->scene_text_len = 3;
-    game->current_scene = draw_level_banner;
+    game->current_scene = draw_scene_text;
     SDL_AddTimer(2000, win_scene_timer, params);
 }
