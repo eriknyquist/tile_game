@@ -168,11 +168,9 @@ void reset_map (ctrl_t *ctrl)
     ctrl->player.rect.y = TILE_SIZE * ctrl->map.start_y + 1;
     ctrl->pos = ctrl->map.start_x - (XTILES_WIDTH / 2);
     ctrl->player.yvelocity = 0;
-    ctrl->blocks = 0;
     ctrl->offset = 0;
     ctrl->bgpos = 0;
     ctrl->bgoffset = 0;
-    memcpy(ctrl->map.data, ctrl->map.reset_copy, sizeof(ctrl->map.data));
 }
 
 /* Detect a sequence of '\r\n' or '\n\r' in the file stream, so we

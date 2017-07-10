@@ -31,7 +31,7 @@ void game_window_init (ctrl_t *ctrl, game_t *game, char *title)
     ctrl->images.bg_fixed =
         load_bitmap(ctrl, "bitmaps/sky.bmp", &ctrl->bg_rect);
     ctrl->images.hud_life =
-        load_bitmap(ctrl, "bitmaps/hud_life_icon.bmp", NULL);
+        load_bitmap(ctrl, "bitmaps/hud_life_icon.png", NULL);
 
     text_init(ctrl, ctrl->font_size);
 }
@@ -45,6 +45,7 @@ void game_init (ctrl_t *ctrl, game_t *game)
     ctrl->player.rect.w = PLAYER_SIZE;
     ctrl->player.rect.h = PLAYER_SIZE;
     ctrl->max_blocks = 1;
+    ctrl->lives = 5;
 
     if (next_level(ctrl, game) != 0) {
         fprintf(stderr, "Error: unable to load map files for level 1\n");

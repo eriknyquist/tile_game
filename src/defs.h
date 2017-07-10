@@ -62,6 +62,9 @@
 /* No. of pixels of BG scenery movement for a physics step */
 #define BG_PIXELS (MAP_PIXELS / 2)
 
+/* Max. number of player lives */
+#define MAX_LIVES 5
+
 #define MAP_FILE_NAME "map"
 #define BG_FILE_NAME "background"
 
@@ -118,6 +121,7 @@ typedef struct control {
     SDL_Rect colliders[YTILES_HEIGHT][MAX_XTILES_WIDTH + 1];
     SDL_Window *win;
     SDL_Renderer *rend;
+    unsigned int lives;
     unsigned int blocks;
     unsigned int max_blocks;
     unsigned int pos;

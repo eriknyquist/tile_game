@@ -3,6 +3,7 @@
 #include "map.h"
 #include "scenes.h"
 
+static uint8_t dying;
 static void *params[2];
 
 /* draw_coloured_rect: draw coloured rect outline */
@@ -109,19 +110,39 @@ void cut_to_text (game_t *game, char *text, unsigned int len, unsigned int secs)
 
 static uint32_t death_timer (uint32_t interval, void *param)
 {
+    void **ptr;
+    ctrl_t *ctrl;
     game_t *game;
 
-    game = (game_t *)param;
+    ptr = (void **)param;
+    ctrl = (ctrl_t *)ptr[0];
+    game = (game_t *)ptr[1];
 
     game->return_scene = draw_scene_game_reset;
-    cut_to_text(game, "dead", 5, 1);
+    if (ctrl->lives == 1) {
+        memcpy(ctrl->map.data, ctrl->map.reset_copy, sizeof(ctrl->map.data));
+        ctrl->lives = MAX_LIVES;
+        ctrl->blocks = 0;
+        cut_to_text(game, "game over", 10, 5);
+    } else {
+        --ctrl->lives;
+        cut_to_text(game, "dead", 5, 1);
+    }
+
+    dying = 0;
     return 0;
 }
 
-void death (game_t *game)
+void death (ctrl_t *ctrl, game_t *game)
 {
+    params[0] = ctrl;
+    params[1] = game;
+
+    if (dying) return;
+
+    dying = 1;
     game->current_scene = draw_scene_game_paused;
-    SDL_AddTimer(1000, death_timer, game);
+    SDL_AddTimer(1000, death_timer, params);
 }
 
 void winning_scene (ctrl_t *ctrl, game_t *game)

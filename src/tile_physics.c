@@ -105,6 +105,6 @@ void tile_collisions_bottom (ctrl_t *ctrl, game_t *game, moveable_t *obj)
             obj->grounded = 1;
         }
     } else if (ddist == BELOW_MAP) {
-        death(game);
+        death(ctrl, game);
     }
 }

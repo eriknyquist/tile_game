@@ -1,4 +1,5 @@
 #include "defs.h"
+#include "SDL2/SDL_image.h"
 
 #define MAX_BMPS 128
 
@@ -16,7 +17,7 @@ SDL_Texture *load_bitmap (ctrl_t *ctrl, char *filename, SDL_Rect *rect)
         exit(1);
     }
 
-    if ((surface = SDL_LoadBMP(filename)) == NULL) {
+    if ((surface = IMG_Load(filename)) == NULL) {
         fprintf(stderr, "Error loading file %s: %s\n", filename,
             SDL_GetError());
         exit(1);
