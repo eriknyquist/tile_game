@@ -1,3 +1,5 @@
+WIN_DIR = windows_build
+
 # Native compilation flags
 CFLAGS = -Wall -pedantic $(shell sdl2-config --cflags)
 LDFLAGS = $(shell sdl2-config --libs) -lSDL2_ttf -lSDL2_image -lm
@@ -10,14 +12,16 @@ WIN_LDFLAGS = $(shell $(SDL_WIN_DIR)/sdl2-config --libs) -lSDL2_ttf -lSDL2_image
 
 SRCS=$(wildcard src/*.c)
 OBJS=$(SRCS:.c=.o)
+
 PROG = game
+WIN_PROG = $(WIN_DIR)/$(PROG).exe
 
 all: $(PROG)
 
 win32: CC = $(WIN_CC)
 win32: CFLAGS = $(WIN_CFLAGS)
 win32: LDFLAGS = $(WIN_LDFLAGS)
-win32: PROG := $(PROG).exe
+win32: PROG := $(WIN_DIR)/$(PROG).exe
 win32: $(PROG)
 
 %.o: %.c
@@ -27,4 +31,4 @@ $(PROG): $(OBJS)
 	$(CC) $(OBJS) -o $(PROG) $(LDFLAGS)
 
 clean:
-	rm -f $(PROG) $(PROG).exe src/*.o
+	rm -f $(OBJS) $(PROG) $(WIN_PROG)
