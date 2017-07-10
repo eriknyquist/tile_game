@@ -54,6 +54,9 @@ int main(int argc, char *argv[])
     memset(&game, 0, sizeof(game_t));
     game.dt_factor = 1.0;
 
+    game.rflags = SDL_RENDERER_ACCELERATED;
+    control.vsync = 1;
+
     config_window_init(&control, &game);
     game.current_scene = draw_config_window;
 

@@ -97,6 +97,7 @@ static void vsync_setval (option_t *opt, ctrl_t *ctrl, game_t *game)
 static void start_game (ctrl_t *ctrl, game_t *game)
 {
     text_quit(ctrl);
+    SDL_DestroyRenderer(ctrl->rend);
     SDL_DestroyWindow(ctrl->win);
     game_window_init(ctrl, game, "Tile game");
     game_init(ctrl, game);
@@ -128,8 +129,8 @@ void config_window_init (ctrl_t *ctrl, game_t *game)
         exit(1);
     }
 
-    game->rflags = SDL_RENDERER_ACCELERATED;
-    ctrl->rend = SDL_CreateRenderer(ctrl->win, -1, game->rflags);
+    ctrl->rend = SDL_CreateRenderer(ctrl->win, -1,
+        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     /* Build game config. menu */
     text_init(ctrl, 48);
