@@ -12,8 +12,7 @@ void menu_init (menu_t *m)
 }
 
 int menu_add_option (menu_t *m, char *label,
-        void (*setval)(option_t*, ctrl_t*, game_t*),
-    int selected)
+    void (*setval)(int, ctrl_t*, game_t*), int selected)
 {
     if (m->options[m->max].label[0] != 0)
         ++m->max;
@@ -29,7 +28,7 @@ int menu_add_option (menu_t *m, char *label,
     return 0;
 }
 
-int menu_add_value (menu_t *m, char *value, int selected)
+int menu_add_value (menu_t *m, char *label, int id, int selected)
 {
     unsigned int vmax;
 
@@ -40,7 +39,8 @@ int menu_add_value (menu_t *m, char *value, int selected)
     if (selected)
         m->options[m->max].vi = vmax;
 
-    memcpy(m->options[m->max].values[vmax], value, OPTION_MAX_LENGTH);
+    memcpy(m->options[m->max].values[vmax].label, label, OPTION_MAX_LENGTH);
+    m->options[m->max].values[vmax].id = id;
     ++m->options[m->max].max;
     return 0;
 }
@@ -58,11 +58,47 @@ static int menu_height (menu_t *m)
 
 void menu_set_values (menu_t *m, ctrl_t *ctrl, game_t *game)
 {
-    unsigned int i;
+    unsigned int i, vi;
 
     for (i = 0; i <= m->max; ++i) {
-        if (m->options[i].setval)
-            m->options[i].setval(&m->options[i], ctrl, game);
+        if (m->options[i].setval) {
+            vi = m->options[i].vi;
+            m->options[i].setval(m->options[i].values[vi].id, ctrl, game);
+        }
+    }
+}
+
+void menu_cursor_up (menu_t *menu)
+{
+    if (menu->li == 0) {
+        menu->li = menu->max;
+    } else {
+        --menu->li;
+    }
+}
+
+void menu_cursor_down (menu_t *menu)
+{
+    menu->li = (menu->li + 1) % (menu->max + 1);
+}
+
+void menu_current_up (menu_t *menu)
+{
+    unsigned int vi;
+
+    vi = menu->options[menu->li].vi;
+    menu->options[menu->li].vi = (vi + 1) % menu->options[menu->li].max;
+}
+
+void menu_current_down (menu_t *menu)
+{
+    int i;
+
+    i = menu->options[menu->li].vi;
+    if (i == 0) {
+        menu->options[menu->li].vi = menu->options[menu->li].max - 1;
+    } else {
+        --menu->options[menu->li].vi;
     }
 }
 
@@ -82,7 +118,7 @@ void menu_draw (ctrl_t *ctrl, menu_t *m, int swidth, int sheight)
             ptr = m->options[i].label;
         } else {
             snprintf(buf, sizeof(buf), "%s: %s", m->options[i].label,
-                m->options[i].values[m->options[i].vi]);
+                m->options[i].values[m->options[i].vi].label);
             ptr = buf;
         }
 

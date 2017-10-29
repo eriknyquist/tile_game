@@ -7,11 +7,17 @@
 
 typedef struct option option_t;
 typedef struct menu menu_t;
+typedef struct value value_t;
+
+struct value {
+    char label[OPTION_MAX_LENGTH];
+    int id;
+};
 
 struct option {
     char label[OPTION_MAX_LENGTH];
-    char values[MAX_OPTION_VALUES][OPTION_MAX_LENGTH];
-    void (*setval)(struct option*, ctrl_t*, game_t*);
+    value_t values[MAX_OPTION_VALUES];
+    void (*setval)(int, ctrl_t*, game_t*);
     int x;
     int y;
     uint8_t vi;
@@ -24,11 +30,22 @@ struct menu {
     uint8_t li;
 };
 
+/* Menu-building functions */
 void menu_init (menu_t *m);
 int menu_add_option (menu_t *m, char *label,
-    void (*setval)(option_t*, ctrl_t*, game_t*), int selected);
-int menu_add_value (menu_t *m, char *value, int selected);
+    void (*setval)(int id, ctrl_t*, game_t*), int selected);
+int menu_add_value (menu_t *m, char *label, int id, int selected);
+
+/* Draw current state of menu */
 void menu_draw (ctrl_t *ctrl, menu_t *m, int swidth, int sheight);
+
+/* Call all the set_value callbacks */
 void menu_set_values (menu_t *m, ctrl_t *ctrl, game_t *game);
+
+/* Menu usage & cursor movement */
+void menu_cursor_up (menu_t *menu);
+void menu_cursor_down (menu_t *menu);
+void menu_current_up (menu_t *menu);
+void menu_current_down (menu_t *menu);
 
 #endif

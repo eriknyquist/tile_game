@@ -7,7 +7,33 @@
 #include "menu.h"
 #include "scenes.h"
 
+#define NUM_FPS_OPTIONS 7
+#define NUM_RES_OPTIONS 6
+
 static menu_t menu;
+
+/* Menu data for FPS options */
+static char *fps_option_labels[NUM_FPS_OPTIONS] = {
+    "10", "15", "20", "24", "25", "30", "60"
+};
+
+static int fps_option_values[NUM_FPS_OPTIONS] = {10, 15, 20, 24, 25, 30, 60};
+
+
+/* Menu data for resolution options */
+static char *res_option_labels[NUM_RES_OPTIONS] = {
+    "1152x648", "1280x720", "1366x768", "1600x900", "1920x1080", "2569x1440"
+};
+
+static int res_option_values[NUM_RES_OPTIONS][3] = {
+/*  width    height   font size */
+    {1152,   648,     35},
+    {1280,   720,     38},
+    {1366,   768,     40},
+    {1600,   900,     48},
+    {1920,   1080,    58},
+    {2560,   1440,    77}
+};
 
 static uint32_t frame_timer (uint32_t interval, void *param)
 {
@@ -26,72 +52,21 @@ static uint32_t frame_timer (uint32_t interval, void *param)
     return interval;
 }
 
-static void fps_setval (option_t *opt, ctrl_t *ctrl, game_t *game)
+static void fps_setval (int id, ctrl_t *ctrl, game_t *game)
 {
-    switch(opt->vi) {
-        case 0:
-            game->fps = 10;
-        break;
-        case 1:
-            game->fps = 15;
-        break;
-        case 2:
-            game->fps = 20;
-        break;
-        case 3:
-            game->fps = 24;
-        break;
-        case 4:
-            game->fps = 25;
-        break;
-        case 5:
-            game->fps = 30;
-        break;
-        case 6:
-            game->fps = 60;
-        break;
-    }
+    game->fps = fps_option_values[id];
 }
 
-static void resolution_setval (option_t *opt, ctrl_t *ctrl, game_t *game)
+static void resolution_setval (int id, ctrl_t *ctrl, game_t *game)
 {
-    switch(opt->vi) {
-        case 0:
-            ctrl->screen_width = 1152;
-            ctrl->screen_height = 648;
-            ctrl->font_size = 35;
-        break;
-        case 1:
-            ctrl->screen_width = 1280;
-            ctrl->screen_height = 720;
-            ctrl->font_size = 38;
-        break;
-        case 2:
-            ctrl->screen_width = 1366;
-            ctrl->screen_height = 768;
-            ctrl->font_size = 40;
-        break;
-        case 3:
-            ctrl->screen_width = 1600;
-            ctrl->screen_height = 900;
-            ctrl->font_size = 48;
-        break;
-        case 4:
-            ctrl->screen_width = 1920;
-            ctrl->screen_height = 1080;
-            ctrl->font_size = 58;
-        break;
-        case 5:
-            ctrl->screen_width = 2560;
-            ctrl->screen_height = 1440;
-            ctrl->font_size = 77;
-        break;
-    }
+    ctrl->screen_width = res_option_values[id][0];
+    ctrl->screen_height = res_option_values[id][1];
+    ctrl->font_size = res_option_values[id][2];
 }
 
-static void vsync_setval (option_t *opt, ctrl_t *ctrl, game_t *game)
+static void vsync_setval (int id, ctrl_t *ctrl, game_t *game)
 {
-    ctrl->vsync = opt->vi;
+    ctrl->vsync = id;
 }
 
 static void start_game (ctrl_t *ctrl, game_t *game)
@@ -105,6 +80,15 @@ static void start_game (ctrl_t *ctrl, game_t *game)
     if (!ctrl->vsync) {
         /* Start the frame timer */
         game->timer = SDL_AddTimer(1000 / game->fps, frame_timer, NULL);
+    }
+}
+
+void add_menu_option_values(menu_t *menu, char *labels[], int selected, int num)
+{
+    int i;
+
+    for (i = 0; i < num; ++i) {
+        menu_add_value(menu, labels[i], i, (selected == i) ? 1 : 0);
     }
 }
 
@@ -136,25 +120,15 @@ void config_window_init (ctrl_t *ctrl, game_t *game)
     text_init(ctrl, 48);
     menu_init(&menu);
     menu_add_option(&menu, "FPS", fps_setval, 0);
-    menu_add_value(&menu, "10", 0);
-    menu_add_value(&menu, "15", 0);
-    menu_add_value(&menu, "20", 0);
-    menu_add_value(&menu, "24", 0);
-    menu_add_value(&menu, "25", 0);
-    menu_add_value(&menu, "30", 1);
-    menu_add_value(&menu, "60", 0);
+    add_menu_option_values(&menu, fps_option_labels, 5, NUM_FPS_OPTIONS);
 
-    menu_add_option(&menu, "VSync", vsync_setval, 0);
-    menu_add_value(&menu, "no", 0);
-    menu_add_value(&menu, "yes", 1);
 
     menu_add_option(&menu, "Resolution", resolution_setval, 0);
-    menu_add_value(&menu, "1152x648", 0);
-    menu_add_value(&menu, "1280x720", 0);
-    menu_add_value(&menu, "1366x768", 0);
-    menu_add_value(&menu, "1600x900", 1);
-    menu_add_value(&menu, "1920x1080", 0);
-    menu_add_value(&menu, "2569x1440", 0);
+    add_menu_option_values(&menu, res_option_labels, 3, NUM_RES_OPTIONS);
+
+    menu_add_option(&menu, "VSync", vsync_setval, 0);
+    menu_add_value(&menu, "no", 0, 0);
+    menu_add_value(&menu, "yes", 1, 1);
 
     menu_add_option(&menu, "Play!", NULL, 1);
     menu_draw(ctrl, &menu, CONFIG_WINDOW_WIDTH, CONFIG_WINDOW_HEIGHT);
@@ -162,32 +136,31 @@ void config_window_init (ctrl_t *ctrl, game_t *game)
 
 int draw_config_window (ctrl_t *ctrl, game_t *game)
 {
-    int i, ret;
+    int ret;
 
     ret = 0;
 
     if (ctrl->input.down) {
-        menu.li = (menu.li + 1) % (menu.max + 1);
+        menu_cursor_down(&menu);
         ctrl->input.down = 0;
     } else if (ctrl->input.up) {
-        if (menu.li == 0)
-            menu.li = menu.max;
-        else
-            --menu.li;
-
+        menu_cursor_up(&menu);
         ctrl->input.up = 0;
-    } else if (ctrl->input.enter) {
+    } else if (ctrl->input.left) {
+        menu_current_down(&menu);
+        ctrl->input.left = 0;
+    } else if (ctrl->input.enter || ctrl->input.right) {
         if (menu.li == menu.max) {
             /* Last menu item-- "Play!". Start the game */
             menu_set_values(&menu, ctrl, game);
             start_game(ctrl, game);
             ret = 1;
         } else if (menu.options[menu.li].max > 0) {
-            i = menu.options[menu.li].vi;
-            menu.options[menu.li].vi = (i + 1) % menu.options[menu.li].max;
+            menu_current_up(&menu);
         }
 
         ctrl->input.enter = 0;
+        ctrl->input.right = 0;
     } else {
         return ret;
     }
