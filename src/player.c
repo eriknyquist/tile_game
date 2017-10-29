@@ -52,10 +52,10 @@ static void do_tile_changes (ctrl_t *ctrl)
                 ++ctrl->blocks;
         }
 
-        ctrl->input.shift = 0;
-    }
+        memset(&ctrl->input, 0, sizeof(ctrl->input));
 
-    if (ctrl->input.space && !ctrl->player.grounded && ctrl->blocks > 0) {
+    } else if (ctrl->input.space && !ctrl->player.grounded
+            && ctrl->blocks > 0) {
         tile_y = ctrl->player.rect.y + ctrl->player.rect.h + (TILE_SIZE * 2);
 
         if (tile_y < ctrl->screen_height) {
