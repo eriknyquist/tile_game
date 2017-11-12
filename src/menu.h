@@ -30,19 +30,39 @@ struct menu {
     uint8_t li;
 };
 
-/* Menu-building functions */
+/* Menu-building functions
+ *
+ * Use these functions to initialise a new menu and add new
+ * options & values to it */
+
+/* Initialise new empty menu */
 void menu_init (menu_t *m);
+
+/* Add a new top-level option to the menu */
 int menu_add_option (menu_t *m, char *label,
     void (*setval)(int id, ctrl_t*, game_t*), int selected);
+
+/* Add a new value to the most recently added option*/
 int menu_add_value (menu_t *m, char *label, int id, int selected);
+
+
+/* Menu management functions
+ *
+ * Use these functions to draw the current state of the menu and invoke
+ * option-specific callback functions */
 
 /* Draw current state of menu */
 void menu_draw (ctrl_t *ctrl, menu_t *m, int swidth, int sheight);
 
-/* Call all the set_value callbacks */
+/* Call all the callbacks registered with menu_add_option */
 void menu_set_values (menu_t *m, ctrl_t *ctrl, game_t *game);
 
-/* Menu usage & cursor movement */
+
+/* Menu cursor movement
+ *
+ * Use these functions to move the on-screen menu cursor and
+ * cycle through values for the currently selected option */
+
 void menu_cursor_up (menu_t *menu);
 void menu_cursor_down (menu_t *menu);
 void menu_current_up (menu_t *menu);
