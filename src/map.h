@@ -9,7 +9,7 @@
     memset(ctrl->map.data, 0,\
            sizeof(ctrl->map.data[0][0]) * (MAX_X + XTILES_WIDTH + 1) * MAX_Y)
 
-void do_map (ctrl_t *ctrl);
+void do_map (ctrl_t *ctrl, double blend);
 void draw_map (ctrl_t *ctrl);
 void reset_map (ctrl_t *ctrl);
 int load_map (ctrl_t *ctrl);

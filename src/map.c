@@ -10,8 +10,8 @@
 
 #define LINE_ENDING(c) (c == '\n' || c == '\r')
 
-#define X_ACCEL(ctrl) \
-    ((ctrl->map.x_accel >= MAP_PIXELS) ? MAP_PIXELS : ctrl->map.x_accel + 0.5)
+#define X_ACCEL(ctrl) ((ctrl->map.x_accel >= MAP_PIXELS) ? MAP_PIXELS : \
+    ctrl->map.x_accel + 0.5)
 
 #define BG_X_ACCEL(ctrl) \
     (((ctrl->map.x_accel / 2) >= BG_PIXELS) ? BG_PIXELS : \
@@ -40,9 +40,9 @@ static void draw_bg_tiles (ctrl_t *ctrl)
  * background, based on the current keyboard inputs, and the limiting 'pixels'
  * value provided. The BG scenery will never be moved by more than 'pixels',
  * despite keyboard inputs */
-static void do_bg (ctrl_t *ctrl, float map_pixels)
+static void do_bg (ctrl_t *ctrl, double map_pixels)
 {
-    float pixels;
+    double pixels;
 
     if ((pixels = BG_X_ACCEL(ctrl)) > map_pixels)
         pixels = map_pixels;
@@ -106,25 +106,28 @@ static void draw_map_tiles (ctrl_t *ctrl)
  * movement is restricted if there is a map tile blocking the player on this
  * plane, and that information gets passed on to draw_bg_scenery so that the
  * BG scenery's movement can be restricted too */
-void do_map (ctrl_t *ctrl)
+void do_map (ctrl_t *ctrl, double blend)
 {
     int dist;
+    double blended;
+
+    blended = 0.0;
 
     /* Left keypress: scroll map to the right */
     if (ctrl->input.left &&
             !ctrl->input.right && (ctrl->pos > 0 || ctrl->offset < 0)) {
         dist = tile_distance_left(ctrl, &ctrl->player);
         ctrl->map.x_accel = X_ACCEL(ctrl);
-        ctrl->map.x_accel = clip_movement(ctrl->map.x_accel, dist, 1.0);
+        blended = clip_movement(ctrl->map.x_accel * blend, dist, 1.0);
 
         /* Handle positioning of map between tile boundaries */
-        if (((ctrl->offset + ctrl->map.x_accel) > TILE_SIZE)) {
-            ctrl->offset = fmod(ctrl->offset + ctrl->map.x_accel, TILE_SIZE);
+        if (((ctrl->offset + blended) > TILE_SIZE)) {
+            ctrl->offset = fmod(ctrl->offset + blended, TILE_SIZE);
 
             if (ctrl->pos >= 1)
                 ctrl->pos -= 1;
         } else {
-            ctrl->offset += ctrl->map.x_accel;
+            ctrl->offset += blended;
         }
 
     /* Right keypress: scroll map to the left */
@@ -132,17 +135,16 @@ void do_map (ctrl_t *ctrl)
             !ctrl->input.left && (ctrl->pos < ctrl->map.max_p)) {
         dist = tile_distance_right(ctrl, &ctrl->player);
         ctrl->map.x_accel = X_ACCEL(ctrl);
-        ctrl->map.x_accel = clip_movement(ctrl->map.x_accel, dist, -1.0);
+        blended = clip_movement(ctrl->map.x_accel * blend, dist, -1.0);
 
         /* Handle positioning of map between tile boundaries */
-        if ((ctrl->offset - ctrl->map.x_accel) < 0) {
-            ctrl->offset = TILE_SIZE + (ctrl->offset - ctrl->map.x_accel);
+        if ((ctrl->offset - blended) < 0) {
+            ctrl->offset = TILE_SIZE + (ctrl->offset - blended);
             ctrl->pos += 1;
         } else {
-            ctrl->offset -= ctrl->map.x_accel;
+            ctrl->offset -= blended;
         }
 
-        ctrl->map.x_accel = ctrl->map.x_accel;
     } else {
         ctrl->map.x_accel = 0.0;
     }
@@ -151,7 +153,7 @@ void do_map (ctrl_t *ctrl)
     memset(ctrl->colliders, 0,
         sizeof(ctrl->colliders[0][0]) * YTILES_HEIGHT * (XTILES_WIDTH + 1));
 
-    do_bg(ctrl, ctrl->map.x_accel);
+    do_bg(ctrl, blended);
 }
 
 void draw_map (ctrl_t *ctrl)

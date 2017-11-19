@@ -96,14 +96,14 @@ typedef struct map {
     int start_y;
     int finish_x;
     int finish_y;
-    float x_accel;
-    float bg_x_accel;
+    double x_accel;
+    double bg_x_accel;
 } map_t;
 
 typedef struct moveable {
     SDL_Rect rect;
-    float yvelocity;
-    float xvelocity;
+    double yvelocity;
+    double xvelocity;
     uint8_t grounded;
 } moveable_t;
 
@@ -132,8 +132,8 @@ typedef struct control {
     int screen_width;
     int font_size;
     uint8_t vsync;
-    float offset;
-    float bgoffset;
+    double offset;
+    double bgoffset;
 } ctrl_t;
 
 typedef struct game {
@@ -145,7 +145,7 @@ typedef struct game {
     unsigned int fps;
     unsigned int scene_text_len;
     unsigned int dt;
-    float dt_factor;
+    double dt_factor;
     uint8_t slomo;
 } game_t;
 #endif

@@ -70,9 +70,9 @@ int set_tile_by_screen (ctrl_t *ctrl, uint8_t sym, int x, int y, uint8_t value)
 
 int trajectory_range (ctrl_t *ctrl, int xvelocity, int yvelocity)
 {
-    float time;
+    double time;
 
-    time = (yvelocity / (float)GRAVITY_PIXELS) * 2.0;
+    time = (yvelocity / (double)GRAVITY_PIXELS) * 2.0;
     return (int)(time * xvelocity);
 }
 

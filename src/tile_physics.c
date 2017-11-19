@@ -56,14 +56,14 @@ int tile_distance_down (ctrl_t *ctrl, moveable_t *obj)
     );
 }
 
-float clip_movement (float movement, int distance, float backup)
+double clip_movement (double movement, int distance, double backup)
 {
-    float ret;
+    double ret;
 
     ret = movement;
 
     if (distance > 0 && ((int)movement) >= (distance - 1)) {
-        ret = (float)(distance - 1);
+        ret = (double)(distance - 1);
     } else if (distance == 0) {
         ret = backup;
     }
@@ -91,7 +91,7 @@ void tile_collisions_top (ctrl_t *ctrl, game_t *game, moveable_t *obj)
 void tile_collisions_bottom (ctrl_t *ctrl, game_t *game, moveable_t *obj)
 {
     int ddist;
-    float mvmt;
+    double mvmt;
 
     ddist = tile_distance_down(ctrl, obj);
     if (ddist >= 0) {

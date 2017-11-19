@@ -86,7 +86,7 @@ void init_player (ctrl_t *ctrl)
 
 /* do_player: perform a full step of physics calculations for the player
  * and draw the player at the new position */
-void do_player (ctrl_t *ctrl, game_t *game)
+void do_player (ctrl_t *ctrl, game_t *game, double blend)
 {
     int x, y;
 
@@ -104,5 +104,5 @@ void do_player (ctrl_t *ctrl, game_t *game)
 
     do_tile_changes(ctrl);
     calculate_ymovement(ctrl, game);
-    ctrl->player.rect.y += ctrl->player.yvelocity;
+    ctrl->player.rect.y += ctrl->player.yvelocity * blend;
 }
