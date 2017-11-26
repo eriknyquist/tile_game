@@ -28,10 +28,10 @@
 #define MAX_TILE_SIZE (1440 / MAX_Y)
 
 /* Jump velocity boost, pixels */
-#define JUMP_ACCEL (TILE_SIZE * 0.7)
+#define JUMP_ACCEL (TILE_SIZE * 0.6)
 
 /* Gravity increase, in pixels, for a single physics step */
-#define GRAVITY_PIXELS (TILE_SIZE / 20.0)
+#define GRAVITY_PIXELS (TILE_SIZE / 28.0)
 
 /* Maximum gravity velocity, in pixels, for a single physics step */
 #define MAX_GRAVITY_PIXELS (GRAVITY_PIXELS * 8.0)
