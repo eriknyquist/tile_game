@@ -107,7 +107,7 @@ void menu_draw (ctrl_t *ctrl, menu_t *m, int swidth, int sheight)
     SDL_Rect r;
     char *ptr;
     char buf[(OPTION_MAX_LENGTH * 2) + 3];
-    unsigned int i, height, width, pheight, x, y;
+    int i, height, width, pheight, x, y;
 
     height = menu_height(m);
     pheight = height + (20 * (m->max + 1));

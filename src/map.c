@@ -81,20 +81,26 @@ static void do_bg (ctrl_t *ctrl, double map_pixels)
 
 static void draw_map_tiles (ctrl_t *ctrl)
 {
+    SDL_Rect tile;
     uint8_t sym;
     int x, y;
 
     /* Draw visible tiles from the map on the screen */
     for (y = 0; y < YTILES_HEIGHT; ++y) {
-        for (x = (ctrl->pos) ? -1 : 0; x < XTILES_WIDTH + 1; ++x) {
+        for (x = (ctrl->pos) ? -1 : 0; x < (XTILES_WIDTH + 1); ++x) {
             /* Get this tile's symbol */
             sym = ctrl->map.data[y][ctrl->pos + x];
 
             if (sym > 0) {
                 /* Draw a new tile here at (x,y) */
-                 ctrl->colliders[y][x] = draw_tile(ctrl, sym,
-                        (x * TILE_SIZE) + ctrl->offset,
-                         y * TILE_SIZE);
+                tile = draw_tile(ctrl, sym, (x * TILE_SIZE) + ctrl->offset,
+                    y * TILE_SIZE);
+
+                /* Save in colliders array, *only* if tile is fully
+                 * on-screen */
+                if (x >= 0) {
+                    ctrl->colliders[y][x] = tile;
+                }
             }
         }
     }
@@ -293,14 +299,17 @@ int next_level (ctrl_t *ctrl, game_t *game)
     char buf[20];
 
     ++ctrl->level;
+
+    /* Set up level intro "cut scene" text and return scene */
+    snprintf(buf, sizeof(buf), "Level %u", ctrl->level);
+    game->return_scene = draw_scene_game_reset;
+    cut_to_text(game, buf, sizeof(buf), LEVEL_BANNER_SECS);
+
     /* Load map & background data from files */
     if (load_map(ctrl) != 0) {
         return -1;
     }
 
-    snprintf(buf, sizeof(buf), "Level %u", ctrl->level);
-    game->return_scene = draw_scene_game_reset;
-    cut_to_text(game, buf, sizeof(buf), LEVEL_BANNER_SECS);
     return 0;
 }
 
