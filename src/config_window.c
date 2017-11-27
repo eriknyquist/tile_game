@@ -8,7 +8,7 @@
 #include "scenes.h"
 
 #define NUM_FPS_OPTIONS 7
-#define NUM_RES_OPTIONS 6
+#define NUM_RES_OPTIONS 7
 
 static menu_t menu;
 
@@ -22,17 +22,19 @@ static int fps_option_values[NUM_FPS_OPTIONS] = {10, 15, 20, 24, 25, 30, 60};
 
 /* Menu data for resolution options */
 static char *res_option_labels[NUM_RES_OPTIONS] = {
-    "1152x648", "1280x720", "1366x768", "1600x900", "1920x1080", "2569x1440"
+    "1152x648", "1280x720", "1366x768", "1600x900", "1920x1080", "2569x1440",
+    "Fullscreen"
 };
 
-static int res_option_values[NUM_RES_OPTIONS][3] = {
-/*  width    height   font size */
-    {1152,   648,     35},
-    {1280,   720,     38},
-    {1366,   768,     40},
-    {1600,   900,     48},
-    {1920,   1080,    58},
-    {2560,   1440,    77}
+static int res_option_values[NUM_RES_OPTIONS][2] = {
+/*  width    height */
+    {1152,   648},
+    {1280,   720},
+    {1366,   768},
+    {1600,   900},
+    {1920,   1080},
+    {2560,   1440},
+    {0, 0}
 };
 
 static uint32_t frame_timer (uint32_t interval, void *param)
@@ -59,9 +61,35 @@ static void fps_setval (int id, ctrl_t *ctrl, game_t *game)
 
 static void resolution_setval (int id, ctrl_t *ctrl, game_t *game)
 {
-    ctrl->screen_width = res_option_values[id][0];
-    ctrl->screen_height = res_option_values[id][1];
-    ctrl->font_size = res_option_values[id][2];
+    SDL_DisplayMode DM;
+    int current_display;
+
+    /* Specific resolution selected */
+    if (res_option_values[id][0]) {
+        ctrl->screen_width = res_option_values[id][0];
+        ctrl->screen_height = res_option_values[id][1];
+
+    /* Fullscreen option selected-- get current display max. resolution */
+    } else {
+        ctrl->fullscreen = 1;
+
+        /* Get display index for display showing main window */
+        if ((current_display = SDL_GetWindowDisplayIndex(ctrl->win)) < 0) {
+            fprintf(stderr, "Couldn't get display index for main window: %s\n",
+                SDL_GetError());
+            exit(1);
+        }
+
+        /* Get settings for current display */
+        if (SDL_GetCurrentDisplayMode(current_display, &DM) < 0) {
+            fprintf(stderr, "Couldn't get display %d mode: %s\n",
+                current_display, SDL_GetError());
+            exit(1);
+        }
+
+        ctrl->screen_width = DM.w;
+        ctrl->screen_height = DM.h;
+    }
 }
 
 static void vsync_setval (int id, ctrl_t *ctrl, game_t *game)

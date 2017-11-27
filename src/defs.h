@@ -8,6 +8,9 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
 
+/* Magic number to calulate font size based on game window size */
+#define SCREEN_FONT_FACTOR 18
+
 /* Number of seconds to display a level banner */
 #define LEVEL_BANNER_SECS 2
 
@@ -132,6 +135,7 @@ typedef struct control {
     int screen_width;
     int font_size;
     uint8_t vsync;
+    uint8_t fullscreen;
     double offset;
     double bgoffset;
 } ctrl_t;

@@ -19,6 +19,17 @@ void game_window_init (ctrl_t *ctrl, game_t *game, char *title)
         exit(1);
     }
 
+    if (ctrl->fullscreen) {
+        if (SDL_SetWindowFullscreen(ctrl->win, SDL_WINDOW_FULLSCREEN) < 0) {
+            fprintf(stderr, "Couldn't set window to fullscreen: %s\n",
+                SDL_GetError());
+            exit(1);
+        }
+    }
+
+    /* Set font size based on game windows size */
+    ctrl->font_size = ctrl->screen_height / SCREEN_FONT_FACTOR;
+
     if (ctrl->vsync)
         game->rflags |= SDL_RENDERER_PRESENTVSYNC;
 
