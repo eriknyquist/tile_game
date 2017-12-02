@@ -63,7 +63,10 @@
 #define MAP_PIXELS (TILE_SIZE / 7.0)
 
 /* No. of pixels of BG scenery movement for a physics step */
-#define BG_PIXELS (MAP_PIXELS / 2)
+#define BG_PIXELS (MAP_PIXELS / 2.0)
+
+/* No. of pixels of sky scenery movement for a physics step */
+#define SKY_PIXELS (MAP_PIXELS / 6.0)
 
 /* Max. number of player lives */
 #define MAX_LIVES 5
@@ -138,6 +141,7 @@ typedef struct control {
     uint8_t fullscreen;
     double offset;
     double bgoffset;
+    double skyoffset;
 } ctrl_t;
 
 typedef struct game {

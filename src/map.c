@@ -14,8 +14,12 @@
     ctrl->map.x_accel + 0.5)
 
 #define BG_X_ACCEL(ctrl) \
-    (((ctrl->map.x_accel / 2) >= BG_PIXELS) ? BG_PIXELS : \
-    (ctrl->map.x_accel / 2))
+    (((ctrl->map.x_accel / 2.0) >= BG_PIXELS) ? BG_PIXELS : \
+    (ctrl->map.x_accel / 2.0))
+
+#define SKY_X_ACCEL(ctrl) \
+    (((ctrl->map.x_accel / 6.0) >= SKY_PIXELS) ? SKY_PIXELS : \
+    (ctrl->map.x_accel / 6.0))
 
 static void draw_bg_tiles (ctrl_t *ctrl)
 {
@@ -36,10 +40,23 @@ static void draw_bg_tiles (ctrl_t *ctrl)
     }
 }
 
-/* draw_bg_scenery: draws the on-screen tiles from the currently loaded
- * background, based on the current keyboard inputs, and the limiting 'pixels'
- * value provided. The BG scenery will never be moved by more than 'pixels',
- * despite keyboard inputs */
+/* draw_bg_bmp: draws repeatable sky/cloud image */
+void draw_bg_bmp (ctrl_t *ctrl)
+{
+    int i;
+
+    SDL_RenderClear(ctrl->rend);
+    ctrl->bg_rect.y = 0;
+
+    for (i = -ctrl->bg_rect.w; i <= ctrl->screen_width; i += ctrl->bg_rect.w) {
+        ctrl->bg_rect.x = i + ctrl->skyoffset;
+        SDL_RenderCopy(ctrl->rend, ctrl->images.bg_fixed, NULL,
+            &ctrl->bg_rect);
+    }
+}
+
+/* do_bg: sets up the offsets required for drawing background scenery tiles,
+ * based on the current input readings */
 static void do_bg (ctrl_t *ctrl, double map_pixels)
 {
     double pixels;
@@ -76,6 +93,35 @@ static void do_bg (ctrl_t *ctrl, double map_pixels)
         }
 
         ctrl->map.bg_x_accel = pixels;
+    }
+}
+
+/* do_sky: sets up the offsets required to draw the sky bitmap, based on
+ * current input readings */
+static void do_sky (ctrl_t *ctrl, double map_pixels)
+{
+    double pixels;
+
+    if ((pixels = SKY_X_ACCEL(ctrl)) > map_pixels)
+        pixels = map_pixels;
+
+    if (ctrl->input.right && ctrl->pos < ctrl->map.max_p) {
+        /* Handle positioning of BG scenery between tile boundaries */
+        if ((ctrl->skyoffset - pixels) < 0) {
+
+            ctrl->skyoffset = ctrl->bg_rect.w + (ctrl->skyoffset - pixels);
+        } else {
+            ctrl->skyoffset -= pixels;
+        }
+    }
+
+    if (ctrl->input.left && (ctrl->pos > 0 || ctrl->offset < 0)) {
+        /* Handle positioning of BG scenery between tile boundaries */
+        if (((ctrl->skyoffset + pixels) > ctrl->bg_rect.w)) {
+            ctrl->skyoffset = fmod(ctrl->skyoffset + pixels, ctrl->bg_rect.w);
+        } else {
+            ctrl->skyoffset += pixels;
+        }
     }
 }
 
@@ -159,11 +205,13 @@ void do_map (ctrl_t *ctrl, double blend)
     memset(ctrl->colliders, 0,
         sizeof(ctrl->colliders[0][0]) * YTILES_HEIGHT * (XTILES_WIDTH + 1));
 
+    do_sky(ctrl, blended);
     do_bg(ctrl, blended);
 }
 
 void draw_map (ctrl_t *ctrl)
 {
+    draw_bg_colour(ctrl, bg_base);
     draw_bg_bmp(ctrl);
     draw_bg_tiles(ctrl);
     draw_map_tiles(ctrl);

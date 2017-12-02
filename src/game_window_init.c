@@ -6,6 +6,7 @@
 /* Initialises SDL and opens the main game window */
 void game_window_init (ctrl_t *ctrl, game_t *game, char *title)
 {
+    double whfactor;
     ctrl->map.start_x = XTILES_WIDTH / 2;
     ctrl->map.start_y = 1;
 
@@ -39,10 +40,18 @@ void game_window_init (ctrl_t *ctrl, game_t *game, char *title)
         exit(1);
     }
 
-    ctrl->images.bg_fixed =
-        load_bitmap(ctrl, "bitmaps/sky.bmp", &ctrl->bg_rect);
+    /* Load 'life' HUD icon */
     ctrl->images.hud_life =
         load_bitmap(ctrl, "bitmaps/hud_life_icon.png", NULL);
+
+    /* Load sky background image */
+    ctrl->images.bg_fixed =
+        load_bitmap(ctrl, "bitmaps/dusk_sky.png", &ctrl->bg_rect);
+
+    /* Set background sky image width based on screen width */
+    whfactor = 1.0 * (ctrl->bg_rect.h / ctrl->bg_rect.w);
+    ctrl->bg_rect.w = ctrl->screen_width / 5;
+    ctrl->bg_rect.h = ctrl->bg_rect.w * whfactor;
 
     text_init(ctrl, ctrl->font_size);
 }

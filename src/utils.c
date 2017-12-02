@@ -33,23 +33,6 @@ void draw_bg_colour (ctrl_t *ctrl, const SDL_Color colour)
     SDL_RenderClear(ctrl->rend);
 }
 
-/* set_bg_color: draws the background colour on the entire window */
-void draw_bg_bmp (ctrl_t *ctrl)
-{
-    int i, j;
-
-    SDL_RenderClear(ctrl->rend);
-
-    for (i = 0; i <= (ctrl->screen_height / ctrl->bg_rect.h); ++i) {
-        for (j = 0; j <= (ctrl->screen_width / ctrl->bg_rect.w); ++j) {
-            ctrl->bg_rect.y = i * ctrl->bg_rect.h;
-            ctrl->bg_rect.x = j * ctrl->bg_rect.w;
-            SDL_RenderCopy(ctrl->rend, ctrl->images.bg_fixed, NULL,
-                &ctrl->bg_rect);
-        }
-    }
-}
-
 int set_tile_by_screen (ctrl_t *ctrl, uint8_t sym, int x, int y, uint8_t value)
 {
     uint8_t old;

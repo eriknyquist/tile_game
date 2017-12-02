@@ -12,6 +12,5 @@ void cut_to_text (game_t *game, char *text, unsigned int len,
 
 void draw_coloured_rect (ctrl_t *ctrl, SDL_Rect *rect, SDL_Colour c);
 void draw_bg_colour (ctrl_t *ctrl, const SDL_Color colour);
-void draw_bg_bmp (ctrl_t *ctrl);
 
 #endif
